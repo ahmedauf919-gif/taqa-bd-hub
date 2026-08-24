@@ -1,0 +1,633 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"></head><body>
+<title>One Company, Every Utility</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy:#002060; --navy-d:#00102f; --navy-l:#00347f;
+    --gold:#FFC10E; --gold-d:#E8A020; --gold-p:#ffe08a;
+    --ground:#faf9f7; --ink:#0b1220;
+    --slate:#475569; --slate-2:#64748b; --slate-3:#94a3b8;
+    --disp:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;
+    --body:"DM Sans",ui-sans-serif,system-ui,sans-serif;
+    --noise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:#05070d;font-family:var(--body);overflow:hidden;height:100vh;width:100vw}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  .app{height:100vh;width:100vw;display:flex;flex-direction:column;position:relative;
+    background:radial-gradient(1000px 500px at 50% -14%,rgba(255,193,14,.10),transparent 68%),#05070d}
+
+  .ptrack{height:3px;background:rgba(255,255,255,.07);flex-shrink:0}
+  .pfill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold));transition:width .5s cubic-bezier(.65,0,.35,1)}
+
+  .wrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:10px clamp(6px,2vw,20px);position:relative}
+
+  .stage{width:1280px;height:720px;flex-shrink:0;position:relative;border-radius:14px;overflow:hidden;
+    box-shadow:0 40px 100px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.07);
+    transform:scale(var(--fit,1));transform-origin:center center}
+
+  .slide{position:absolute;inset:0;display:none;flex-direction:column}
+  .slide.active{display:flex}
+  .slide.enter{animation:sIn .6s cubic-bezier(.22,1,.36,1) both}
+  @keyframes sIn{from{opacity:0;transform:scale(1.015)}to{opacity:1;transform:scale(1)}}
+
+  /* ── Grounds ───────────────────────────────────────────── */
+
+  .lite{background:
+    radial-gradient(900px 520px at 88% -6%,rgba(255,193,14,.16),transparent 60%),
+    radial-gradient(760px 620px at -8% 108%,rgba(0,32,96,.09),transparent 62%),
+    var(--ground)}
+  .dark{background:
+    radial-gradient(880px 560px at 12% -12%,rgba(0,82,152,.55),transparent 62%),
+    radial-gradient(760px 620px at 92% 108%,rgba(255,193,14,.16),transparent 58%),
+    radial-gradient(1000px 700px at 78% 22%,rgba(0,52,127,.45),transparent 65%),
+    linear-gradient(160deg,#00081c 0%,#000d26 42%,#00102f 100%);
+    background-color:#00081c}
+
+  .tex{position:absolute;inset:0;pointer-events:none;background-image:var(--noise);
+    background-size:160px 160px;opacity:.05;mix-blend-mode:overlay}
+  .lite .tex{opacity:.035;mix-blend-mode:multiply}
+
+  .mesh{position:absolute;inset:0;pointer-events:none;
+    background-image:
+      repeating-linear-gradient(0deg,rgba(0,32,96,.04) 0 1px,transparent 1px 56px),
+      repeating-linear-gradient(90deg,rgba(0,32,96,.04) 0 1px,transparent 1px 56px)}
+  .dark .mesh{background-image:
+      repeating-linear-gradient(0deg,rgba(255,255,255,.045) 0 1px,transparent 1px 56px),
+      repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 56px)}
+
+  /* ── Layout ────────────────────────────────────────────── */
+
+  .pad{position:relative;z-index:3;flex:1;min-height:0;display:flex;flex-direction:column;padding:56px 72px 24px}
+  .band{position:relative;z-index:3;height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+    padding:0 30px;font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
+  .lite .band{background:rgba(11,18,32,.94);color:rgba(255,255,255,.5)}
+  .dark .band{background:rgba(255,255,255,.05);color:rgba(255,255,255,.42);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+  .band .r{letter-spacing:.05em;text-transform:none;font-weight:500;font-style:italic;opacity:.72}
+
+  .kick{display:inline-flex;align-items:center;gap:11px;width:fit-content;border-radius:999px;padding:9px 21px;
+    font-family:var(--disp);font-size:15px;font-weight:600;letter-spacing:.22em;text-transform:uppercase}
+  .lite .kick{background:#fff;color:var(--slate);box-shadow:0 2px 10px rgba(0,32,96,.07),inset 0 0 0 1px rgba(0,0,0,.07)}
+  .dark .kick{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);backdrop-filter:blur(10px)}
+  .kick i{width:8px;height:8px;border-radius:50%;background:var(--gold-d);flex-shrink:0}
+  .dark .kick i{background:var(--gold);box-shadow:0 0 12px rgba(255,193,14,.8)}
+
+  h2.head{font-family:var(--disp);font-weight:700;font-size:58px;line-height:1.03;letter-spacing:-.022em;
+    margin:22px 0 0;text-wrap:balance;max-width:1010px}
+  .lite h2.head{color:var(--navy)}
+  .dark h2.head{color:#fff}
+  h2.head .g{color:var(--gold-d)}
+  .dark h2.head .g{color:var(--gold)}
+
+  p.lede{font-size:23px;line-height:1.5;max-width:660px;margin:20px 0 0}
+  .lite p.lede{color:var(--slate)}
+  .dark p.lede{color:rgba(255,255,255,.66)}
+  .lite p.lede b{color:var(--navy);font-weight:600}
+  .dark p.lede b{color:#fff;font-weight:600}
+
+  .area{flex:1;min-height:0;margin-top:30px;display:flex;flex-direction:column}
+  .cols{display:grid;grid-template-columns:1.04fr .96fr;gap:46px;align-items:center;flex:1;min-height:0}
+
+  .ph{color:var(--gold);border-bottom:2px dashed rgba(255,193,14,.45);padding-bottom:2px}
+
+  /* ── Surfaces ──────────────────────────────────────────── */
+
+  .card{border-radius:20px;position:relative;overflow:hidden}
+  .lite .card{background:rgba(255,255,255,.86);backdrop-filter:blur(12px);
+    box-shadow:0 12px 34px -14px rgba(0,32,96,.20),inset 0 0 0 1px rgba(0,32,96,.07)}
+  .dark .card{background:rgba(255,255,255,.055);backdrop-filter:blur(14px);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 18px 44px -18px rgba(0,0,0,.7)}
+  .card.top::before{content:"";position:absolute;inset-inline:0;top:0;height:3px;
+    background:linear-gradient(90deg,var(--gold-d),var(--gold),transparent 92%)}
+
+  figure{margin:0}
+  figcaption{margin-top:14px;font-size:14.5px;text-align:center}
+  .lite figcaption{color:var(--slate-3)}
+  .dark figcaption{color:rgba(255,255,255,.42)}
+  .card svg{display:block;width:100%;height:auto}
+  .card svg.loop{max-width:296px;margin:0 auto}
+
+  /* ── Cover ─────────────────────────────────────────────── */
+
+  .cov .pad{justify-content:center}
+  .cov-eye{font-family:var(--disp);font-size:15px;font-weight:600;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--gold);display:flex;align-items:center;gap:15px}
+  .cov-eye::before{content:"";width:48px;height:3px;background:var(--gold);border-radius:2px;
+    box-shadow:0 0 16px rgba(255,193,14,.65)}
+  .cov h1{font-family:var(--disp);font-weight:700;font-size:84px;line-height:.99;letter-spacing:-.032em;
+    color:#fff;margin:32px 0 0;text-wrap:balance}
+  .cov h1 .g{background:linear-gradient(96deg,var(--gold) 10%,var(--gold-p) 90%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .cov-sub{margin-top:30px;font-size:24px;line-height:1.5;color:rgba(255,255,255,.62);max-width:700px}
+  .cov-by{margin-top:58px;display:flex;align-items:center;gap:18px;font-family:var(--disp);
+    font-size:19px;font-weight:500;color:rgba(255,255,255,.82)}
+  .cov-by .rl{width:54px;height:2px;background:var(--gold);box-shadow:0 0 14px rgba(255,193,14,.6)}
+  .glowball{position:absolute;border-radius:50%;pointer-events:none;filter:blur(58px)}
+
+  /* ── Stats ─────────────────────────────────────────────── */
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .stat{padding:28px 26px}
+  .stat .n{font-family:var(--disp);font-weight:700;font-size:58px;line-height:1;letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums}
+  .lite .stat .n{color:var(--navy)} .dark .stat .n{color:#fff}
+  .stat.hi .n{background:linear-gradient(96deg,var(--gold),var(--gold-p));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .n .sm{font-size:26px;letter-spacing:0;opacity:.55}
+  .stat .l{margin-top:13px;font-size:17.5px;line-height:1.4}
+  .lite .stat .l{color:var(--slate)} .dark .stat .l{color:rgba(255,255,255,.62)}
+
+  /* ── Dot field ─────────────────────────────────────────── */
+
+  .field{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:22px}
+  .field-svg{width:100%;height:auto;display:block}
+  .field-legend{display:flex;align-items:center;gap:30px;font-size:17px;color:rgba(255,255,255,.6)}
+  .field-legend span{display:inline-flex;align-items:center;gap:10px}
+  .lg-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+  .lg-dot.a{background:rgba(255,255,255,.22)}
+  .lg-dot.b{background:var(--gold);box-shadow:0 0 12px rgba(255,193,14,.9)}
+
+  /* ── Example cards ─────────────────────────────────────── */
+
+  .ex3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;flex:1;min-height:0}
+  .ex{padding:30px 26px;display:flex;flex-direction:column;gap:17px;justify-content:center}
+  .ex .tag{align-self:flex-start;background:var(--navy);color:#fff;font-family:var(--disp);font-size:12.5px;
+    font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:7px 15px;border-radius:999px}
+  .ex .fl{font-size:20px;font-weight:700;color:var(--navy);line-height:1.28}
+  .ex .fl .gp{display:block;margin-top:7px;font-size:17.5px;font-weight:500;color:var(--slate-2)}
+  .ex .fl .ar{color:var(--gold-d);margin-right:7px;font-weight:700}
+  .ex .bd{font-size:17.5px;line-height:1.5;color:var(--slate)}
+
+  /* ── Points ────────────────────────────────────────────── */
+
+  .pts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:26px}
+  .pts li{display:flex;gap:17px;align-items:flex-start;font-size:21px;line-height:1.44;font-weight:500}
+  .lite .pts li{color:var(--navy)} .dark .pts li{color:#fff}
+  .pts .sq{flex-shrink:0;width:11px;height:11px;background:var(--gold-d);transform:rotate(45deg);margin-top:8px}
+  .dark .pts .sq{background:var(--gold);box-shadow:0 0 12px rgba(255,193,14,.7)}
+  .pts .sub{display:block;margin-top:6px;font-size:16.5px;font-weight:400;line-height:1.45}
+  .lite .pts .sub{color:var(--slate-2)} .dark .pts .sub{color:rgba(255,255,255,.5)}
+
+  /* ── Contrast block ────────────────────────────────────── */
+
+  .ctr{padding:44px 34px;text-align:center}
+  .ctr .lb{font-family:var(--disp);font-size:15px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+    color:rgba(255,255,255,.42)}
+  .ctr .bg{font-family:var(--disp);font-size:46px;font-weight:700;margin-top:9px;letter-spacing:-.02em;
+    color:rgba(255,255,255,.42);text-decoration:line-through;text-decoration-thickness:3px;
+    text-decoration-color:rgba(255,255,255,.22)}
+  .ctr .sep{font-size:30px;color:var(--gold);margin:18px 0;line-height:1}
+  .ctr .lb.on{color:var(--gold)}
+  .ctr .bg.on{font-size:70px;text-decoration:none;
+    background:linear-gradient(96deg,var(--gold),var(--gold-p));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ── Closers ───────────────────────────────────────────── */
+
+  .cl4{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1;min-height:0;align-content:center}
+  .cl{padding:27px 29px}
+  .cl h3{font-family:var(--disp);font-size:23px;font-weight:700;margin:0 0 10px}
+  .lite .cl h3{color:var(--navy)} .dark .cl h3{color:var(--gold)}
+  .cl p{margin:0;font-size:17.5px;line-height:1.5}
+  .lite .cl p{color:var(--slate)} .dark .cl p{color:rgba(255,255,255,.66)}
+
+  /* ── Reveal ────────────────────────────────────────────── */
+  .rv{opacity:0;transform:translateY(20px)}
+  .slide.active .rv{animation:rvIn .62s cubic-bezier(.21,1,.31,1) both}
+  @keyframes rvIn{to{opacity:1;transform:none}}
+
+  /* ── Nav ───────────────────────────────────────────────── */
+  .hair{height:1px;background:rgba(255,255,255,.08);flex-shrink:0}
+  footer.nav{flex-shrink:0;display:flex;align-items:center;gap:16px;padding:12px 26px;background:rgba(0,16,47,.5)}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid rgba(255,255,255,.16);
+    color:rgba(255,255,255,.7);font-family:var(--body);font-size:14px;font-weight:500;padding:8px 16px;
+    border-radius:999px;cursor:pointer;transition:border-color .15s,color .15s}
+  .btn:hover:not(:disabled){border-color:var(--gold);color:#fff}
+  .btn:disabled{opacity:.3;cursor:default}
+  .btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .dots{display:flex;gap:8px}
+  .db{width:8px;height:8px;border-radius:50%;border:none;padding:0;background:rgba(255,255,255,.24);
+    cursor:pointer;transition:background .15s,transform .15s}
+  .db:hover{background:rgba(255,255,255,.5)}
+  .db.on{background:var(--gold);transform:scale(1.4);box-shadow:0 0 10px rgba(255,193,14,.8)}
+  .db:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+  .ct{font-family:var(--disp);font-size:14px;font-weight:500;color:rgba(255,255,255,.4);
+    font-variant-numeric:tabular-nums;margin-left:4px}
+  .sp{flex:1}
+  .hint{font-size:13px;color:rgba(255,255,255,.28)}
+  .edge{position:absolute;top:0;bottom:0;width:66px;display:flex;align-items:center;justify-content:center;
+    background:none;border:none;color:rgba(255,255,255,.32);cursor:pointer;opacity:0;
+    transition:opacity .2s,color .15s;z-index:6}
+  .edge:hover{color:#fff}
+  .wrap:hover .edge:not(:disabled){opacity:1}
+  .edge.l{left:0}.edge.r{right:0}
+  .edge:disabled{display:none}
+  .edge svg{width:30px;height:30px}
+</style>
+
+<div class="app">
+  <div class="ptrack"><div class="pfill" id="fill"></div></div>
+
+  <div class="wrap">
+    <button class="edge l" id="pe" aria-label="Previous slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
+    <div class="stage" id="stage">
+
+      <!-- 1 · Cover -->
+      <section class="slide dark cov">
+        <div class="mesh"></div><div class="tex"></div>
+        <div class="glowball" style="width:520px;height:520px;right:-140px;top:-160px;background:rgba(255,193,14,.20)"></div>
+        <div class="glowball" style="width:460px;height:460px;left:-120px;bottom:-180px;background:rgba(0,82,152,.55)"></div>
+        <div class="pad">
+          <div class="cov-eye rv" style="animation-delay:60ms">Business Development Briefing</div>
+          <h1 class="rv" style="animation-delay:150ms">One Company.<br>Every Utility.<br><span class="g">One Relationship.</span></h1>
+          <p class="cov-sub rv" style="animation-delay:280ms">Why the next client we win — or grow — shouldn't have to talk to five different people at TAQA to get gas, power and water.</p>
+          <div class="cov-by rv" style="animation-delay:390ms">
+            <span class="rl"></span><span class="ph">Your Name</span>
+            <span style="opacity:.35">·</span><span class="ph">Your Title</span>
+          </div>
+        </div>
+        <div class="band"><span>TAQA Arabia · Confidential</span><span class="r">A World of Energy</span></div>
+      </section>
+
+      <!-- 2 · The Idea -->
+      <section class="slide lite">
+        <div class="mesh"></div><div class="tex"></div>
+        <div class="pad">
+          <div class="kick rv"><i></i>The Idea</div>
+          <h2 class="head rv" style="animation-delay:80ms">The ultimate <span class="g">utility partner.</span></h2>
+          <div class="area cols">
+            <div class="rv" style="animation-delay:170ms">
+              <p class="lede" style="margin-top:0">Electricity. Water. Gas. Most people choose a separate provider for each — different companies, different bills, different relationships to manage.</p>
+              <p class="lede">TAQA Arabia is built to be the one company that supplies all of it. Four divisions, one balance sheet, one brand — <b>already</b> the full utility partner.</p>
+            </div>
+            <figure class="card top rv" style="animation-delay:260ms;padding:26px">
+              <svg viewBox="0 0 420 300" role="img" aria-label="Four TAQA divisions — Gas, Power, Water and Petroleum — each supplying into one shared client at the centre.">
+                <defs><marker id="ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#E8A020"/></marker></defs>
+                <g font-family="Space Grotesk,sans-serif" font-size="13">
+                  <circle cx="210" cy="150" r="40" fill="#002060"/>
+                  <text x="210" y="146" text-anchor="middle" fill="#fff" font-size="14.5" font-weight="700">TAQA</text>
+                  <text x="210" y="164" text-anchor="middle" fill="#FFC10E" font-size="11.5" font-weight="500">client</text>
+                  <g stroke="#E8A020" stroke-width="1.7" fill="none" marker-end="url(#ag)">
+                    <line x1="92" y1="56" x2="181" y2="123"/><line x1="328" y1="56" x2="239" y2="123"/>
+                    <line x1="92" y1="244" x2="181" y2="177"/><line x1="328" y1="244" x2="239" y2="177"/>
+                  </g>
+                  <g text-anchor="middle" font-weight="600">
+                    <circle cx="70" cy="44" r="28" fill="#fff" stroke="#002060" stroke-width="1.5"/><text x="70" y="49" fill="#002060">Gas</text>
+                    <circle cx="350" cy="44" r="28" fill="#fff" stroke="#002060" stroke-width="1.5"/><text x="350" y="49" fill="#002060">Power</text>
+                    <circle cx="70" cy="256" r="28" fill="#fff" stroke="#002060" stroke-width="1.5"/><text x="70" y="261" fill="#002060">Water</text>
+                    <circle cx="350" cy="256" r="28" fill="#fff" stroke="#002060" stroke-width="1.5"/>
+                    <text x="350" y="253" fill="#002060" font-size="10.5">Petro-</text><text x="350" y="265" fill="#002060" font-size="10.5">leum</text>
+                  </g>
+                  <g fill="#94a3b8" font-size="11" font-family="DM Sans,sans-serif">
+                    <text x="126" y="82">supplies</text><text x="294" y="82">supplies</text>
+                    <text x="126" y="224">supplies</text><text x="294" y="224">supplies</text>
+                  </g>
+                </g>
+              </svg>
+              <figcaption>What TAQA Arabia already is: one company, four utilities.</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="band"><span>TAQA Arabia · Confidential</span><span class="r">A World of Energy</span></div>
+      </section>
+
+      <!-- 3 · The Problem -->
+      <section class="slide lite">
+        <div class="mesh"></div><div class="tex"></div>
+        <div class="pad">
+          <div class="kick rv"><i></i>The Problem</div>
+          <h2 class="head rv" style="animation-delay:80ms">The unified approach.</h2>
+          <div class="area cols">
+            <div class="rv" style="animation-delay:170ms">
+              <p class="lede" style="margin-top:0">In practice, one client gets approached by TAQA's divisions separately — a gas rep, a power rep, a water rep, none of them coordinated.</p>
+              <p class="lede">Sometimes 5 or 6 different people from the same company, each pitching one service. <b>None of them tell the client the full story.</b></p>
+            </div>
+            <figure class="card rv" style="animation-delay:260ms;padding:26px">
+              <svg viewBox="0 0 420 300" role="img" aria-label="Four separate TAQA representatives independently approaching the same client, with nothing connecting them to each other.">
+                <defs><marker id="am" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#94a3b8"/></marker></defs>
+                <g font-family="Space Grotesk,sans-serif" font-size="12.5">
+                  <circle cx="210" cy="150" r="35" fill="#fff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3"/>
+                  <text x="210" y="146" text-anchor="middle" fill="#002060" font-size="13" font-weight="700">Client</text>
+                  <text x="210" y="164" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="DM Sans,sans-serif">4 open bills</text>
+                  <g stroke="#94a3b8" stroke-width="1.4" fill="none" stroke-dasharray="5 4" marker-end="url(#am)">
+                    <line x1="96" y1="60" x2="183" y2="127"/><line x1="324" y1="60" x2="237" y2="127"/>
+                    <line x1="96" y1="240" x2="183" y2="173"/><line x1="324" y1="240" x2="237" y2="173"/>
+                  </g>
+                  <g text-anchor="middle" font-weight="600">
+                    <circle cx="72" cy="46" r="26" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+                    <text x="72" y="43" fill="#64748b" font-size="12">Gas</text><text x="72" y="56" fill="#94a3b8" font-size="10" font-weight="400" font-family="DM Sans,sans-serif">rep</text>
+                    <circle cx="348" cy="46" r="26" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+                    <text x="348" y="43" fill="#64748b" font-size="12">Power</text><text x="348" y="56" fill="#94a3b8" font-size="10" font-weight="400" font-family="DM Sans,sans-serif">rep</text>
+                    <circle cx="72" cy="254" r="26" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+                    <text x="72" y="251" fill="#64748b" font-size="12">Water</text><text x="72" y="264" fill="#94a3b8" font-size="10" font-weight="400" font-family="DM Sans,sans-serif">rep</text>
+                    <circle cx="348" cy="254" r="26" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+                    <text x="348" y="251" fill="#64748b" font-size="11">Petrol.</text><text x="348" y="264" fill="#94a3b8" font-size="10" font-weight="400" font-family="DM Sans,sans-serif">rep</text>
+                  </g>
+                </g>
+              </svg>
+              <figcaption>No line connects the four reps — because today, nothing does.</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="band"><span>TAQA Arabia · Confidential</span><span class="r">A World of Energy</span></div>
+      </section>
+
+      <!-- 4 · The Evidence — hero data moment -->
+      <section class="slide dark" id="evidence">
+        <div class="mesh"></div><div class="tex"></div>
+        <div class="glowball" style="width:520px;height:420px;right:-120px;top:-140px;background:rgba(255,193,14,.14)"></div>
+        <div class="pad">
+          <div class="kick rv"><i></i>The Evidence</div>
+          <h2 class="head rv" style="animation-delay:80ms">Every dot is a client we already serve.</h2>
+          <p class="lede rv" style="animation-delay:150ms;max-width:1000px">
+            1,366 real named accounts, cross-checked one by one against TAQA's own records.
+            <b>Exactly one</b> sits on more than a single service.
+          </p>
+          <div class="area field">
+            <div class="rv" style="animation-delay:250ms">
+              <svg class="field-svg" id="dotfield" viewBox="0 0 1120 236" role="img"
+                   aria-label="A field of 1,366 dots, one per TAQA client account. Exactly one dot is highlighted in gold — the only account confirmed on more than one TAQA service."></svg>
+            </div>
+            <div class="field-legend rv" style="animation-delay:380ms">
+              <span><i class="lg-dot a"></i>Single-service account</span>
+              <span><i class="lg-dot b"></i>Multi-service account — the entire opportunity</span>
+            </div>
+          </div>
+        </div>
+        <div class="band"><span>TAQA Arabia · Confidential</span><span class="r">A World of Energy</span></div>
+      </section>
+
+      <!-- 5 · The Opportunity -->
+      <section class="slide lite">
+        <div class="mesh"></div><div class="tex"></div>
+        <div class="pad">
+          <div class="kick rv"><i></i>The Opportunity</div>
+          <h2 class="head rv" style="animation-delay:80ms">Every existing client is a door to three more.</h2>
+          <div class="area ex3">
+            <div class="ex card top rv" style="animation-delay:180ms">
+              <span class="tag">Already on Gas</span>
+              <div class="fl">Factory on natural gas<span class="gp"><span class="ar">→</span>no solar yet</span></div>
+              <p class="bd">Solar at below-grid pricing, financed and owned by TAQA — zero capex, rate locked in for decades.</p>
+            </div>
+            <div class="ex card top rv" style="animation-delay:260ms">
+              <span class="tag">Running on Diesel</span>
+              <div class="fl">Site on diesel gensets<span class="gp"><span class="ar">→</span>already has solar</span></div>
+              <p class="bd">Mobile CNG or piped gas cuts diesel dependence directly — often the fastest payback in the portfolio.</p>
+            </div>
+            <div class="ex card top rv" style="animation-delay:340ms">
+              <span class="tag">Single Service</span>
+              <div class="fl">Resort on water only<span class="gp"><span class="ar">→</span>growing footprint</span></div>
+              <p class="bd">Add electricity distribution and solar — one owner for the whole site's reliability story.</p>
+            </div>
+          </div>
+        </div>
+        <div class="band"><span>TAQA Arabia · Confidential</span><span class="r">A World of Energy</span></div>
+      </section>
+
+      <!-- 6 · Beyond existing clients -->
+      <section class="slide dark">
+        <div class="mesh"></div><div class="tex"></div>
+        <div class="glowball" style="width:440px;height:440px;left:-140px;top:60px;background:rgba(0,82,152,.5)"></div>
+        <div class="pad">
+          <div class="kick rv"><i></i>Beyond Existing Clients</div>
+          <h2 class="head rv" style="animation-delay:80ms">New prospects get the whole picture, <span class="g">not a slice.</span></h2>
+          <div class="area cols">
+            <ul class="pts rv" style="animation-delay:180ms">
+              <li><span class="sq"></span><div>Today a brand-new company hears from five TAQA divisions over months — separately.<span class="sub">No one tells them the full story until, if ever, someone connects the dots.</span></div></li>
+              <li><span class="sq"></span><div>Instead: one meeting, one proposal — gas, power and water laid out together from day one.<span class="sub">One decision for them to make, instead of five.</span></div></li>
+              <li><span class="sq"></span><div>No single-service competitor can make this pitch.<span class="sub">It's a structural advantage only TAQA Arabia has.</span></div></li>
+            </ul>
+            <div class="ctr card rv" style="animation-delay:280ms">
+              <div class="lb">The old way</div>
+              <div class="bg">5 meetings</div>
+              <div class="sep">↓</div>
+              <div class="lb on">The TAQA way</div>
+              <div class="bg on">1 meeting</div>
+            </div>
+          </div>
+        </div>
+        <div class="band"><span>TAQA Arabia · Confidential</span><span class="r">A World of Energy</span></div>
+      </section>
+
+      <!-- 7 · Client experience -->
+      <section class="slide lite">
+        <div class="mesh"></div><div class="tex"></div>
+        <div class="pad">
+          <div class="kick rv"><i></i>The Client Experience</div>
+          <h2 class="head rv" style="animation-delay:80ms">One SLA. One contact.<br>Every service.</h2>
+          <div class="area cols">
+            <div class="rv" style="animation-delay:170ms">
+              <p class="lede" style="margin-top:0">Instead of juggling ten or twenty relationships across TAQA's divisions, the client gets one account owner who orchestrates all of it.</p>
+              <p class="lede">Simpler for them. <b>Stickier for us</b> — every additional service raises the cost of ever leaving.</p>
+            </div>
+            <figure class="card top rv" style="animation-delay:260ms;padding:26px">
+              <svg viewBox="0 0 420 300" role="img" aria-label="A single TAQA account owner sitting between the client and every division, coordinating Gas, Power and Water as one relationship.">
+                <defs><marker id="ag2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#E8A020"/></marker></defs>
+                <g font-family="Space Grotesk,sans-serif" font-size="13">
+                  <circle cx="80" cy="150" r="33" fill="#fff" stroke="#002060" stroke-width="1.6"/>
+                  <text x="80" y="155" text-anchor="middle" fill="#002060" font-weight="700">Client</text>
+                  <line x1="113" y1="150" x2="158" y2="150" stroke="#E8A020" stroke-width="2.6"/>
+                  <circle cx="198" cy="150" r="40" fill="#002060"/>
+                  <text x="198" y="145" text-anchor="middle" fill="#FFC10E" font-size="12.5" font-weight="700">Account</text>
+                  <text x="198" y="162" text-anchor="middle" fill="#FFC10E" font-size="12.5" font-weight="700">Owner</text>
+                  <g stroke="#E8A020" stroke-width="1.7" fill="none" marker-end="url(#ag2)">
+                    <line x1="230" y1="126" x2="321" y2="63"/><line x1="240" y1="150" x2="331" y2="150"/><line x1="230" y1="174" x2="321" y2="237"/>
+                  </g>
+                  <g text-anchor="middle" font-weight="600">
+                    <circle cx="352" cy="50" r="27" fill="#fff" stroke="#002060" stroke-width="1.5"/><text x="352" y="55" fill="#002060">Gas</text>
+                    <circle cx="360" cy="150" r="27" fill="#fff" stroke="#002060" stroke-width="1.5"/><text x="360" y="155" fill="#002060">Power</text>
+                    <circle cx="352" cy="250" r="27" fill="#fff" stroke="#002060" stroke-width="1.5"/><text x="352" y="255" fill="#002060">Water</text>
+                  </g>
+                </g>
+              </svg>
+              <figcaption>One coordinating relationship — not four competing ones.</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="band"><span>TAQA Arabia · Confidential</span><span class="r">A World of Energy</span></div>
+      </section>
+
+      <!-- 8 · Payoff -->
+      <section class="slide lite">
+        <div class="mesh"></div><div class="tex"></div>
+        <div class="pad">
+          <div class="kick rv"><i></i>Why It's Worth Doing</div>
+          <h2 class="head rv" style="animation-delay:80ms">Loyalty compounds into <span class="g">pricing power.</span></h2>
+          <div class="area cols">
+            <ul class="pts rv" style="animation-delay:180ms">
+              <li><span class="sq"></span><div>More services on one account means a deeper relationship — harder for a single-service competitor to displace.</div></li>
+              <li><span class="sq"></span><div>A deeper relationship earns room to offer advantaged tariffs and bundled pricing.<span class="sub">Pricing a single-service vendor structurally can't match.</span></div></li>
+              <li><span class="sq"></span><div>Better pricing makes the next service easier to sell in — the loop reinforces itself.</div></li>
+            </ul>
+            <div class="card top rv" style="animation-delay:280ms;padding:26px;display:flex;align-items:center;justify-content:center">
+              <svg class="loop" viewBox="0 0 300 302" role="img" aria-label="A reinforcing loop: more services leads to a deeper relationship, which leads to pricing power, which leads to easier upsell, which leads back to more services.">
+                <defs><marker id="al" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#E8A020"/></marker></defs>
+                <g font-family="Space Grotesk,sans-serif" font-size="12" text-anchor="middle" font-weight="600">
+                  <circle cx="150" cy="48" r="44" fill="#002060"/>
+                  <text x="150" y="44" fill="#fff">More</text><text x="150" y="59" fill="#fff">services</text>
+                  <circle cx="252" cy="152" r="44" fill="#fff" stroke="#002060" stroke-width="1.5"/>
+                  <text x="252" y="148" fill="#002060" font-size="11.5">Deeper</text><text x="252" y="163" fill="#002060" font-size="11.5">relationship</text>
+                  <circle cx="150" cy="252" r="44" fill="#fff" stroke="#002060" stroke-width="1.5"/>
+                  <text x="150" y="248" fill="#002060" font-size="11.5">Pricing</text><text x="150" y="263" fill="#002060" font-size="11.5">power</text>
+                  <circle cx="48" cy="152" r="44" fill="#fff" stroke="#002060" stroke-width="1.5"/>
+                  <text x="48" y="148" fill="#002060" font-size="11.5">Easier</text><text x="48" y="163" fill="#002060" font-size="11.5">upsell</text>
+                  <g stroke="#E8A020" stroke-width="1.9" fill="none" marker-end="url(#al)">
+                    <path d="M 186 72 A 130 130 0 0 1 228 114"/><path d="M 228 190 A 130 130 0 0 1 186 228"/>
+                    <path d="M 114 228 A 130 130 0 0 1 72 190"/><path d="M 72 114 A 130 130 0 0 1 114 72"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="band"><span>TAQA Arabia · Confidential</span><span class="r">A World of Energy</span></div>
+      </section>
+
+      <!-- 9 · Tooling -->
+      <section class="slide lite">
+        <div class="mesh"></div><div class="tex"></div>
+        <div class="pad">
+          <div class="kick rv"><i></i>Not A Someday Idea</div>
+          <h2 class="head rv" style="animation-delay:80ms">The tooling already exists.</h2>
+          <div class="area cl4">
+            <div class="cl card top rv" style="animation-delay:180ms"><h3>TAQA Analytics Dashboard</h3><p>Every account, sector and current service — searchable and filterable, live.</p></div>
+            <div class="cl card top rv" style="animation-delay:250ms"><h3>Outreach Opportunities</h3><p>Each account already paired with the solution most likely to fit, and why.</p></div>
+            <div class="cl card top rv" style="animation-delay:320ms"><h3>A unified going-forward approach</h3><p>One account owner, one proposal — every division represented in a single conversation.</p></div>
+            <div class="cl card top rv" style="animation-delay:390ms"><h3>Client presentation decks</h3><p>Sector by sector, fully narrated, ready to send or present as-is.</p></div>
+          </div>
+        </div>
+        <div class="band"><span>TAQA Arabia · Confidential</span><span class="r">A World of Energy</span></div>
+      </section>
+
+      <!-- 10 · Handoff -->
+      <section class="slide dark cov">
+        <div class="mesh"></div><div class="tex"></div>
+        <div class="glowball" style="width:540px;height:480px;right:-150px;bottom:-160px;background:rgba(255,193,14,.20)"></div>
+        <div class="glowball" style="width:420px;height:420px;left:-130px;top:-140px;background:rgba(0,82,152,.5)"></div>
+        <div class="pad">
+          <div class="cov-eye rv" style="animation-delay:60ms">Next · 15 Minutes, Live</div>
+          <h1 class="rv" style="animation-delay:150ms;font-size:76px">Let's go <span class="g">look at it.</span></h1>
+          <div class="cl4 rv" style="animation-delay:280ms;flex:none;margin-top:46px;max-width:1030px">
+            <div class="cl card"><h3>The client presentation decks</h3><p>Sector by sector — narrated, animated, ready to send today.</p></div>
+            <div class="cl card"><h3>The TAQA Analytics dashboard</h3><p>Live and searchable — your own accounts, in the room, today.</p></div>
+          </div>
+        </div>
+        <div class="band"><span>TAQA Arabia · Confidential</span><span class="r">A World of Energy</span></div>
+      </section>
+
+    </div>
+
+    <button class="edge r" id="ne" aria-label="Next slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  <div class="hair"></div>
+  <footer class="nav">
+    <button class="btn" id="pb">← Prev</button>
+    <div class="dots" id="dots"></div>
+    <button class="btn" id="nb">Next →</button>
+    <span class="ct" id="ct"></span>
+    <div class="sp"></div>
+    <span class="hint">← → or Space to navigate · F for fullscreen</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var slides = [].slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length, cur = 0;
+
+  /* ── Dot field: 1,366 accounts, exactly one multi-service ── */
+  (function buildField () {
+    var svg = document.getElementById('dotfield');
+    if (!svg) return;
+    var TOTAL = 1366, COLS = 82, GAP = 13.4, R = 3.8, PADX = 6, PADY = 8;
+    var rows = Math.ceil(TOTAL / COLS);
+    var w = PADX * 2 + (COLS - 1) * GAP + R * 2;
+    var h = PADY * 2 + (rows - 1) * GAP + R * 2;
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+
+    var HILITE = 8 * COLS + 40; // mid-field, easy to point at from the room
+    var parts = [];
+    for (var i = 0; i < TOTAL; i++) {
+      var c = i % COLS, r = Math.floor(i / COLS);
+      var cx = PADX + R + c * GAP, cy = PADY + R + r * GAP;
+      if (i === HILITE) continue;
+      parts.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="rgba(255,255,255,0.20)"/>');
+    }
+    var hc = PADX + R + (HILITE % COLS) * GAP, hr = PADY + R + Math.floor(HILITE / COLS) * GAP;
+    parts.push('<circle cx="' + hc + '" cy="' + hr + '" r="' + (R * 3.1) + '" fill="#FFC10E" opacity="0.16"/>');
+    parts.push('<circle cx="' + hc + '" cy="' + hr + '" r="' + (R * 1.9) + '" fill="#FFC10E" opacity="0.30"/>');
+    parts.push('<circle cx="' + hc + '" cy="' + hr + '" r="' + (R * 1.15) + '" fill="#FFC10E"/>');
+    svg.innerHTML = parts.join('');
+  })();
+
+  var dotsWrap = document.getElementById('dots');
+  slides.forEach(function (_, i) {
+    var b = document.createElement('button');
+    b.className = 'db';
+    b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    b.addEventListener('click', function () { go(i); });
+    dotsWrap.appendChild(b);
+  });
+  var dots = [].slice.call(dotsWrap.children);
+
+  var fill = document.getElementById('fill'), ct = document.getElementById('ct'),
+      pb = document.getElementById('pb'), nb = document.getElementById('nb'),
+      pe = document.getElementById('pe'), ne = document.getElementById('ne');
+
+  function render() {
+    slides.forEach(function (s, i) {
+      s.classList.toggle('active', i === cur);
+      if (i === cur) { s.classList.remove('enter'); void s.offsetWidth; s.classList.add('enter'); }
+    });
+    dots.forEach(function (d, i) { d.classList.toggle('on', i === cur); });
+    fill.style.width = ((cur + 1) / total * 100) + '%';
+    ct.textContent = (cur + 1) + ' / ' + total;
+    pb.disabled = pe.disabled = cur === 0;
+    nb.disabled = ne.disabled = cur === total - 1;
+  }
+  function go(i) { cur = Math.max(0, Math.min(total - 1, i)); render(); }
+
+  pb.addEventListener('click', function () { go(cur - 1); });
+  nb.addEventListener('click', function () { go(cur + 1); });
+  pe.addEventListener('click', function () { go(cur - 1); });
+  ne.addEventListener('click', function () { go(cur + 1); });
+
+  function fs() {
+    try {
+      if (document.fullscreenElement) { document.exitFullscreen && document.exitFullscreen(); }
+      else { var e = document.documentElement; e.requestFullscreen && e.requestFullscreen(); }
+    } catch (e) {}
+  }
+
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(cur + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(cur - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); go(0); }
+    else if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+    else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); fs(); }
+  });
+
+  function fit() {
+    var w = document.querySelector('.wrap');
+    document.documentElement.style.setProperty('--fit', Math.min(w.clientWidth / 1280, w.clientHeight / 720));
+  }
+  window.addEventListener('resize', fit);
+  document.addEventListener('fullscreenchange', fit);
+  fit(); render();
+})();
+</script>
+
+</body></html>
