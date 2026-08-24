@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TAQA Arabia — Agriculture Gas Solutions</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#002060;--blue:#005298;--gold:#FFC10E;--green:#16a34a;--dkgreen:#14532d;--ltgreen:#f0fdf4;--light:#f4f7fb;--muted:#64748b}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#111;overflow:hidden;height:100vh}
+.deck{position:relative;width:100vw;height:100vh}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .4s ease;overflow:hidden}
+.slide.active{opacity:1;pointer-events:all}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 28px;background:rgba(0,32,96,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,199,14,.2)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-size:13px;font-weight:600}
+.topbar .brand span{color:var(--gold)}
+.controls{display:flex;align-items:center;gap:10px}
+.btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;transition:.2s}
+.btn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.btn:disabled{opacity:.3;cursor:default}
+.progress{width:160px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--gold);transition:width .4s}
+.slide-num{color:rgba(255,255,255,.6);font-size:12px;min-width:48px;text-align:right}
+.logo-mark{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--navy);font-size:14px}
+
+/* SLIDE TYPES */
+.slide-cover{background:linear-gradient(135deg,var(--dkgreen) 0%,#166534 40%,#15803d 100%);justify-content:center;align-items:center;text-align:center;padding:80px 60px 60px;display:flex;flex-direction:column}
+.slide-content{background:var(--light);padding:90px 60px 36px;gap:18px;display:flex;flex-direction:column}
+.slide-dark{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);padding:90px 60px 36px;color:#fff;gap:18px;display:flex;flex-direction:column}
+.slide-green{background:linear-gradient(135deg,var(--dkgreen) 0%,#166534 100%);padding:90px 60px 36px;color:#fff;gap:18px;display:flex;flex-direction:column}
+.slide-lgreen{background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);padding:90px 60px 36px;gap:18px;display:flex;flex-direction:column}
+.slide-gold{background:linear-gradient(135deg,#78350f 0%,#92400e 100%);padding:90px 60px 36px;color:#fff;gap:18px;display:flex;flex-direction:column}
+
+/* COVER */
+.cover-badge{display:inline-block;background:rgba(255,199,14,.2);border:1px solid rgba(255,199,14,.4);color:var(--gold);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 18px;border-radius:20px;margin-bottom:22px}
+.cover-title{font-size:54px;font-weight:800;color:#fff;line-height:1.1;margin-bottom:14px}
+.cover-title span{color:var(--gold)}
+.cover-sub{font-size:17px;color:rgba(255,255,255,.7);max-width:620px;margin:0 auto 34px}
+.cover-logo{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.4);font-size:12px}
+
+/* SECTION HEADER */
+.sh-badge{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.sh-badge.green{color:#4ade80}
+.sh-title{font-size:33px;font-weight:800;color:var(--navy);margin-bottom:5px;line-height:1.2}
+.sh-title.white{color:#fff}
+.sh-div{width:48px;height:4px;background:var(--gold);border-radius:2px;margin-bottom:18px}
+
+/* CARDS */
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{background:#fff;border-radius:14px;padding:20px;border:1px solid rgba(0,32,96,.07);box-shadow:0 2px 10px rgba(0,32,96,.05)}
+.card-dk{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:20px}
+.card-gn{background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);border-radius:14px;padding:20px}
+.card-icon{font-size:28px;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px}
+.card-title.w{color:#fff}
+.card-title.gn{color:#166534}
+.card-body{font-size:12.5px;color:var(--muted);line-height:1.6}
+.card-body.w{color:rgba(255,255,255,.75)}
+
+/* BAR CHART */
+.bar-chart{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:12px}
+.bar-label{width:180px;color:var(--muted);font-weight:500;flex-shrink:0}
+.bar-label.w{color:rgba(255,255,255,.7)}
+.bar-track{flex:1;height:26px;background:rgba(0,32,96,.06);border-radius:6px;overflow:hidden}
+.bar-track.dk{background:rgba(255,255,255,.08)}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:700;color:#fff}
+.bf-gold{background:var(--gold);color:var(--navy)}
+.bf-navy{background:var(--navy)}
+.bf-red{background:#dc2626}
+.bf-green{background:var(--green)}
+.bf-blue{background:var(--blue)}
+
+/* CHECK LIST */
+.cl{display:flex;flex-direction:column;gap:10px}
+.ci{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5}
+.ci.w{color:rgba(255,255,255,.85)}
+.cm{width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}
+.cm.g{background:var(--green);color:#fff}
+.cm.b{background:var(--blue);color:#fff}
+
+/* TIMELINE */
+.tl{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding-bottom:18px;position:relative}
+.tl-item:not(:last-child)::after{content:'';position:absolute;left:17px;top:36px;bottom:0;width:2px;background:rgba(255,255,255,.15)}
+.tl-dot{width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;z-index:1}
+.tl-dot.w{background:rgba(255,255,255,.15);color:#fff}
+.tl-head{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.tl-body{font-size:12px;color:rgba(255,255,255,.65);line-height:1.5}
+
+/* APPLICATION HERO */
+.app-hero{border-radius:16px;padding:22px;display:flex;gap:20px;align-items:flex-start}
+.app-hero.navy{background:var(--navy);border:1px solid rgba(255,255,255,.1)}
+.app-hero.green{background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25)}
+.ah-icon{font-size:44px;flex-shrink:0}
+.ah-title{font-size:16px;font-weight:800;color:#fff;margin-bottom:5px}
+.ah-title.gn{color:#166534}
+.ah-body{font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.6}
+.ah-body.gn{color:var(--muted)}
+.ah-stat{display:inline-block;background:var(--gold);color:var(--navy);font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;margin-top:8px}
+
+/* VISION BOX */
+.vision-box{background:linear-gradient(135deg,var(--gold) 0%,#ffd04e 100%);border-radius:14px;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.vb-title{font-size:16px;font-weight:800;color:var(--navy)}
+.vb-sub{font-size:12px;color:rgba(0,32,96,.65);margin-top:4px;max-width:580px}
+.vb-btn{background:var(--navy);color:#fff;padding:10px 24px;border-radius:8px;font-weight:700;font-size:13px;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <button onclick="window.opener?window.close():window.location.href='/'" class="btn" style="display:flex;align-items:center;gap:5px;padding:5px 12px">&#8962; Home</button>
+    <div class="brand"><div class="logo-mark">T</div>TAQA Arabia &nbsp;<span>| Agriculture Gas Solutions</span></div>
+  </div>
+  <div class="controls">
+    <button class="btn" id="prev">◀ Prev</button>
+    <div class="progress"><div class="progress-fill" id="pbar"></div></div>
+    <button class="btn" id="next">Next ▶</button>
+    <span class="slide-num" id="snum">1 / 11</span>
+  </div>
+</div>
+
+<div class="deck">
+
+<!-- SLIDE 1: COVER -->
+<section class="slide slide-cover active">
+  <div class="cover-badge">Agriculture & Food Security · Saudi Arabia · 2025</div>
+  <div class="cover-title">Powering Saudi<br/><span>Agriculture</span></div>
+  <div class="cover-sub">Clean, affordable natural gas for Saudi farms, greenhouses, poultry facilities, and food processing — supporting Vision 2030 food security goals</div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:40px">
+    <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-size:12px;padding:6px 16px;border-radius:20px">🌱 Greenhouses</span>
+    <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-size:12px;padding:6px 16px;border-radius:20px">🐔 Poultry Farms</span>
+    <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-size:12px;padding:6px 16px;border-radius:20px">💧 Irrigation Pumping</span>
+    <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-size:12px;padding:6px 16px;border-radius:20px">🌾 Food Processing</span>
+    <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-size:12px;padding:6px 16px;border-radius:20px">🐄 Dairy & Livestock</span>
+  </div>
+  <div style="display:flex;gap:36px;justify-content:center">
+    <div style="text-align:center"><div style="font-size:38px;font-weight:900;color:var(--gold)">50%+</div><div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-top:2px">Cost Savings vs Diesel</div></div>
+    <div style="width:1px;background:rgba(255,255,255,.2)"></div>
+    <div style="text-align:center"><div style="font-size:38px;font-weight:900;color:var(--gold)">24/7</div><div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-top:2px">Uninterrupted Supply</div></div>
+    <div style="width:1px;background:rgba(255,255,255,.2)"></div>
+    <div style="text-align:center"><div style="font-size:38px;font-weight:900;color:var(--gold)">Vision</div><div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-top:2px">2030 Aligned</div></div>
+  </div>
+  <div class="cover-logo"><div class="logo-mark">T</div>TAQA Arabia · طاقة العربية © 2025</div>
+</section>
+
+<!-- SLIDE 2: CHALLENGE -->
+<section class="slide slide-dark">
+  <div class="sh-badge">The Challenge</div>
+  <div class="sh-title white">Saudi Agriculture's Energy Burden</div>
+  <div class="sh-div"></div>
+  <div style="flex:1;display:flex;gap:24px">
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+      <div class="g2" style="gap:12px">
+        <div class="card-dk">
+          <div class="card-icon">⛽</div>
+          <div class="card-title w">Diesel Dependency</div>
+          <div class="card-body w">Saudi farms spend 25–40% of operating costs on diesel — for generators, pumps, and heating. Prices volatile, supply unreliable in remote areas.</div>
+        </div>
+        <div class="card-dk">
+          <div class="card-icon">🌡️</div>
+          <div class="card-title w">Climate Extremes</div>
+          <div class="card-body w">Saudi Arabia's temperatures range from -5°C to +50°C. Year-round controlled environments are essential but energy-intensive to maintain.</div>
+        </div>
+        <div class="card-dk">
+          <div class="card-icon">💧</div>
+          <div class="card-title w">Water Scarcity</div>
+          <div class="card-body w">Groundwater depletion drives demand for energy-intensive desalination and pumping. More efficient fuel = fewer water m³ per energy unit.</div>
+        </div>
+        <div class="card-dk">
+          <div class="card-icon">🌍</div>
+          <div class="card-title w">Food Security Goal</div>
+          <div class="card-body w">Vision 2030 targets 60% domestic food production. Scaling up agriculture requires cheap, reliable energy — diesel alone cannot deliver.</div>
+        </div>
+      </div>
+    </div>
+    <div style="flex:0 0 280px;display:flex;flex-direction:column;gap:12px;justify-content:center">
+      <div style="text-align:center;padding:24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px">
+        <div style="font-size:48px;font-weight:900;color:var(--gold)">SAR 8B</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;margin-top:4px">Annual Agricultural Energy Spend in KSA</div>
+      </div>
+      <div style="text-align:center;padding:24px;background:rgba(255,199,14,.1);border:1px solid rgba(255,199,14,.25);border-radius:14px">
+        <div style="font-size:48px;font-weight:900;color:var(--gold)">70%</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;margin-top:4px">Still Relies on Diesel or LPG</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: APPLICATIONS OVERVIEW -->
+<section class="slide slide-content">
+  <div class="sh-badge">Applications</div>
+  <div class="sh-title">Natural Gas Across the Agricultural Value Chain</div>
+  <div class="sh-div"></div>
+  <div class="g3" style="flex:1">
+    <div class="card" style="border-top:4px solid var(--green)">
+      <div class="card-icon">🌱</div>
+      <div class="card-title">Greenhouse Heating</div>
+      <div class="card-body">Gas-fired hot-water heating systems maintain optimal growing temperatures (18–28°C) year-round. Radiant tube heaters and fan-coil units for all greenhouse types.</div>
+      <div style="margin-top:10px;font-size:11px;background:rgba(22,163,74,.1);color:#166534;padding:5px 10px;border-radius:8px;font-weight:700">Avg Saving: SAR 180K/hectare/year vs diesel</div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--green)">
+      <div class="card-icon">💨</div>
+      <div class="card-title">CO₂ Enrichment</div>
+      <div class="card-body">Gas combustion generates CO₂ that can be captured and injected into greenhouses at 1,000–1,500 ppm. Proven to increase crop yields 20–30% with no additional cost.</div>
+      <div style="margin-top:10px;font-size:11px;background:rgba(22,163,74,.1);color:#166534;padding:5px 10px;border-radius:8px;font-weight:700">Bonus: Free CO₂ from heating exhaust</div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--green)">
+      <div class="card-icon">🐔</div>
+      <div class="card-title">Poultry House Heating</div>
+      <div class="card-body">Gas brooders and radiant heaters for chick rearing (32–35°C zone). Consistent temperature = lower mortality, faster growth, 8% better feed conversion ratio (FCR).</div>
+      <div style="margin-top:10px;font-size:11px;background:rgba(22,163,74,.1);color:#166534;padding:5px 10px;border-radius:8px;font-weight:700">Avg Saving: SAR 95K/10K birds/cycle</div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--blue)">
+      <div class="card-icon">💧</div>
+      <div class="card-title">Gas-Powered Pumping</div>
+      <div class="card-body">Reciprocating and centrifugal gas engines for deep-well irrigation pumps. Replace diesel generators with cleaner, cheaper gas engines at existing bore-hole sites.</div>
+      <div style="margin-top:10px;font-size:11px;background:rgba(0,82,152,.1);color:#1e3a5f;padding:5px 10px;border-radius:8px;font-weight:700">Avg Saving: SAR 0.12/m³ water pumped</div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--blue)">
+      <div class="card-icon">🌾</div>
+      <div class="card-title">Grain Drying & Processing</div>
+      <div class="card-body">High-volume grain dryers, date processing ovens, alfalfa dehydrators. Gas provides precise temperature control critical for food-grade drying without scorching.</div>
+      <div style="margin-top:10px;font-size:11px;background:rgba(0,82,152,.1);color:#1e3a5f;padding:5px 10px;border-radius:8px;font-weight:700">Capacity: Up to 200 tonnes/day on gas</div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--blue)">
+      <div class="card-icon">🐄</div>
+      <div class="card-title">Dairy & Livestock</div>
+      <div class="card-body">Milk pasteurisation, feed sterilisation, water heating for milking parlours, biogas-to-gas upgrading. Complete energy solutions for large dairy farms.</div>
+      <div style="margin-top:10px;font-size:11px;background:rgba(0,82,152,.1);color:#1e3a5f;padding:5px 10px;border-radius:8px;font-weight:700">ROI: &lt;18 months on connection investment</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: GREENHOUSE DEEP DIVE -->
+<section class="slide slide-lgreen">
+  <div class="sh-badge">Focus Area</div>
+  <div class="sh-title">Greenhouse Gas Solutions — Deep Dive</div>
+  <div class="sh-div"></div>
+  <div style="flex:1;display:flex;gap:24px">
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+      <div class="app-hero green">
+        <div class="ah-icon">🌡️</div>
+        <div>
+          <div class="ah-title gn">Heating System Options</div>
+          <div class="ah-body gn">TAQA Arabia supports three greenhouse heating configurations: (1) Centralised hot-water boiler with perimeter heating pipes, (2) Unit heaters with direct gas combustion, (3) Radiant tube heaters for spot heating. All integrate with existing climate control systems.</div>
+          <div class="ah-stat">Delivered Heat Efficiency: 92–96% (vs 78% diesel)</div>
+        </div>
+      </div>
+      <div class="app-hero green">
+        <div class="ah-icon">💨</div>
+        <div>
+          <div class="ah-title gn">CO₂ Enrichment — The Free Bonus</div>
+          <div class="ah-body gn">When gas burns, it produces CO₂ and water vapour — both beneficial in greenhouses. With a simple heat exchanger and scrubber system, combustion exhaust can be cleaned and piped directly into the growing zone at no extra fuel cost.</div>
+          <div class="ah-stat">Yield uplift 20–30% on tomatoes, peppers, cucumbers</div>
+        </div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px">Annual Heating Cost — 1 Hectare Greenhouse (SAR)</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">Natural Gas (TAQA)</span><div class="bar-track"><div class="bar-fill bf-gold" style="width:25%">85K</div></div></div>
+        <div class="bar-row"><span class="bar-label">Diesel Generator</span><div class="bar-track"><div class="bar-fill bf-red" style="width:78%">265K</div></div></div>
+        <div class="bar-row"><span class="bar-label">LPG (Propane)</span><div class="bar-track"><div class="bar-fill bf-navy" style="width:60%">205K</div></div></div>
+        <div class="bar-row"><span class="bar-label">Electric Heat Pump</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:50%">170K</div></div></div>
+      </div>
+      <div style="background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0;border-radius:12px;padding:16px;margin-top:4px">
+        <div style="font-size:13px;font-weight:700;color:#15803d;margin-bottom:4px">Switching 1 ha from Diesel to TAQA Gas:</div>
+        <div style="font-size:28px;font-weight:900;color:#15803d">SAR 180,000/year saved</div>
+        <div style="font-size:11px;color:#166534;margin-top:2px">+ free CO₂ enrichment for additional 20–30% yield uplift</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: POULTRY DEEP DIVE -->
+<section class="slide slide-dark">
+  <div class="sh-badge">Focus Area</div>
+  <div class="sh-title white">Poultry & Livestock — Gas Makes the Difference</div>
+  <div class="sh-div"></div>
+  <div style="flex:1;display:flex;gap:24px">
+    <div style="flex:1">
+      <div class="tl">
+        <div class="tl-item">
+          <div class="tl-dot">🐣</div>
+          <div><div class="tl-head">Chick Brooding (Day 1–14)</div><div class="tl-body">Gas brooders maintain 32–35°C in the chick zone. Consistent warmth is critical — temperature drops by even 3°C in the first week increases mortality by up to 15% and stunts growth. Gas brooders maintain temperature without the power cuts that disrupt electric systems.</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">🐓</div>
+          <div><div class="tl-head">Grow-Out Phase (Day 14–42)</div><div class="tl-body">Radiant tube heaters maintain 18–24°C across the full shed. Even heat distribution eliminates cold corners where birds pile up (causing injuries). Gas systems eliminate the noise of diesel generators that stress birds and reduce growth rate.</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">🏭</div>
+          <div><div class="tl-head">Slaughter & Processing</div><div class="tl-body">Scalding tanks, defeathering, chilling, and sterilisation all use heated water. Gas water heaters provide continuous supply at the volumes needed — electric cannot scale to meet processing demand peaks.</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot gold">📊</div>
+          <div><div class="tl-head">FCR Improvement</div><div class="tl-body">Consistent temperatures on gas heating improve Feed Conversion Ratio (FCR) by 0.08–0.12 points (e.g., from 1.72 to 1.62). At SAR 0.85/kg feed and 50,000 birds per cycle, that's SAR 65,000+ saved per cycle on feed alone.</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="flex:0 0 300px;display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,.8)">Performance vs Diesel (50,000 birds/cycle)</div>
+      <div class="card-dk">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Fuel Cost per Cycle</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-size:28px;font-weight:900;color:var(--gold)">SAR 42K</span>
+          <span style="font-size:13px;color:rgba(255,255,255,.5)">vs SAR 137K diesel</span>
+        </div>
+      </div>
+      <div class="card-dk">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Mortality Reduction</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-size:28px;font-weight:900;color:var(--gold)">↓ 2.1%</span>
+          <span style="font-size:13px;color:rgba(255,255,255,.5)">mortality rate improvement</span>
+        </div>
+      </div>
+      <div class="card-dk">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Annual Saving (6 cycles)</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-size:28px;font-weight:900;color:var(--gold)">SAR 570K</span>
+          <span style="font-size:13px;color:rgba(255,255,255,.5)">total benefit</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: IRRIGATION -->
+<section class="slide slide-content">
+  <div class="sh-badge">Water & Pumping</div>
+  <div class="sh-title">Gas-Powered Irrigation — More Water, Less Cost</div>
+  <div class="sh-div"></div>
+  <div style="flex:1;display:flex;gap:24px">
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+      <div class="card" style="border-left:4px solid var(--green)">
+        <div class="card-icon">⚙️</div>
+        <div class="card-title">Gas Engine Pump Sets</div>
+        <div class="card-body">Natural gas reciprocating engines (200–2,000 kW) drive centrifugal or turbine pumps directly. More efficient than diesel at the same output, with lower fuel cost per m³ pumped. Suitable for deep wells (200–500m depth).</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--green)">
+        <div class="card-icon">💡</div>
+        <div class="card-title">Gas CHP for Irrigation Districts</div>
+        <div class="card-body">Combined Heat & Power (CHP) units generate electricity for pumps while capturing waste heat for farm buildings or greenhouses. Electrical efficiency 38–42% + heat recovery 40% = 80%+ total energy use efficiency.</div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--blue)">
+        <div class="card-icon">📡</div>
+        <div class="card-title">SCADA-Integrated Smart Pumping</div>
+        <div class="card-body">TAQA Arabia's SCADA system monitors gas flow, pressure, and engine performance. Integration with your irrigation controller allows gas consumption to follow crop demand automatically.</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--navy)">Cost per 1,000 m³ Water Pumped (SAR)</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">Natural Gas Engine</span><div class="bar-track"><div class="bar-fill bf-gold" style="width:18%">95</div></div></div>
+        <div class="bar-row"><span class="bar-label">Diesel Generator Set</span><div class="bar-track"><div class="bar-fill bf-red" style="width:72%">380</div></div></div>
+        <div class="bar-row"><span class="bar-label">Grid Electricity</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:54%">285</div></div></div>
+        <div class="bar-row"><span class="bar-label">Solar + Battery</span><div class="bar-track"><div class="bar-fill bf-navy" style="width:36%">190</div></div></div>
+      </div>
+      <div style="background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0;border-radius:12px;padding:16px">
+        <div style="font-size:13px;font-weight:700;color:#15803d;margin-bottom:4px">Typical Farm — 500 ha irrigated, 5M m³/year:</div>
+        <div style="font-size:26px;font-weight:900;color:#15803d">SAR 1.425M saved/year</div>
+        <div style="font-size:11px;color:#166534;margin-top:2px">vs. diesel pump sets at current diesel prices</div>
+      </div>
+      <div style="background:rgba(255,199,14,.1);border:1px solid rgba(255,199,14,.3);border-radius:10px;padding:12px;font-size:11.5px;color:#92400e">
+        💧 <strong>Water productivity:</strong> Gas engines have higher power density — same well can support larger pump, delivering 15% more water per bore-hole with no additional drilling cost.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: FOOD PROCESSING -->
+<section class="slide slide-green">
+  <div class="sh-badge green">Food Processing</div>
+  <div class="sh-title white">Gas for Saudi Food Production & Processing</div>
+  <div class="sh-div"></div>
+  <div class="g3" style="flex:1">
+    <div class="card-dk">
+      <div class="card-icon">📅</div>
+      <div class="card-title w">Date Processing</div>
+      <div class="card-body w">Gas-fired drying tunnels for Medjool, Ajwa, Sukkari dates. Precise 60–80°C drying temperatures reduce moisture to 12–14% without caramelisation. Output: 50–200 tonnes/day on a single gas line.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">🌾</div>
+      <div class="card-title w">Alfalfa Dehydration</div>
+      <div class="card-body w">High-temperature gas dryers (400–600°C combustion, 120°C product) for alfalfa pellet production. Gas replaces bunker fuel in rotary drum dryers — 45% lower fuel cost per tonne of dried product.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">🥛</div>
+      <div class="card-title w">Dairy Pasteurisation</div>
+      <div class="card-body w">Gas-fired plate heat exchangers and steam generation for HTST and UHT pasteurisation. Consistent steam pressure critical for regulatory compliance (Saudi Food Authority standards).</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">🧂</div>
+      <div class="card-title w">Desalination (Small Scale)</div>
+      <div class="card-body w">Gas-fired Multi-Effect Distillation (MED) units for on-farm brackish water desalination. Eliminates tanker water dependency for remote farms — SAR 0.80/m³ vs SAR 4.50/m³ by tanker.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">❄️</div>
+      <div class="card-title w">Cold Chain — Absorption Chillers</div>
+      <div class="card-body w">Gas absorption refrigeration for cold storage of produce, dairy, and meat. No compressors, no refrigerant — lower maintenance, longer life, 40% cheaper than electric refrigeration at Saudi electricity prices.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">🌰</div>
+      <div class="card-title w">Roasting & Baking</div>
+      <div class="card-body w">Gas rotary ovens, roasters for nuts, seeds, coffee. Uniform heat transfer, programmable temperature profiles, and superior product quality vs. electric elements — at lower cost per batch.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: COST COMPARISON -->
+<section class="slide slide-content">
+  <div class="sh-badge">Economics</div>
+  <div class="sh-title">Full Cost Comparison — Natural Gas vs. Alternatives</div>
+  <div class="sh-div"></div>
+  <div style="flex:1;display:flex;gap:24px">
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px">Fuel Cost per MMBtu — Agricultural Applications (SAR)</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">Natural Gas (TAQA)</span><div class="bar-track"><div class="bar-fill bf-gold" style="width:20%">11.39</div></div></div>
+        <div class="bar-row"><span class="bar-label">LPG/Propane</span><div class="bar-track"><div class="bar-fill bf-navy" style="width:50%">28.40</div></div></div>
+        <div class="bar-row"><span class="bar-label">Agricultural Diesel</span><div class="bar-track"><div class="bar-fill bf-red" style="width:67%">38.10</div></div></div>
+        <div class="bar-row"><span class="bar-label">Bunker Fuel Oil</span><div class="bar-track"><div class="bar-fill bf-navy" style="width:58%">33.00</div></div></div>
+        <div class="bar-row"><span class="bar-label">Grid Electricity (thermal equiv.)</span><div class="bar-track"><div class="bar-fill bf-red" style="width:82%">46.60</div></div></div>
+      </div>
+      <div style="margin-top:16px;background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0;border-radius:12px;padding:14px">
+        <div style="font-size:13px;font-weight:700;color:#15803d">Gas is the lowest-cost thermal energy source in Saudi Arabia — by a significant margin.</div>
+        <div style="font-size:11px;color:#166534;margin-top:4px">Regulated RAB tariff means prices are predictable for 5-year intervals — budget with confidence.</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:13px;font-weight:700;color:var(--navy)">Annual Savings by Farm Type (SAR)</div>
+      <table style="width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;font-size:12.5px;box-shadow:0 2px 10px rgba(0,32,96,.06)">
+        <thead>
+          <tr><th style="background:var(--navy);color:#fff;padding:10px 14px;text-align:left;font-weight:700;font-size:11px">Farm Type</th><th style="background:var(--navy);color:#fff;padding:10px 14px;text-align:right;font-weight:700;font-size:11px">vs Diesel</th><th style="background:var(--navy);color:#fff;padding:10px 14px;text-align:right;font-weight:700;font-size:11px">vs LPG</th></tr>
+        </thead>
+        <tbody>
+          <tr style="background:#fff"><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06)">Greenhouse (1 ha)</td><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right;color:var(--green);font-weight:700">SAR 180K</td><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right;color:var(--green);font-weight:700">SAR 120K</td></tr>
+          <tr style="background:#fff"><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06)">Poultry (50K birds)</td><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right;color:var(--green);font-weight:700">SAR 570K</td><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right;color:var(--green);font-weight:700">SAR 340K</td></tr>
+          <tr style="background:#fff"><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06)">Irrigation (500 ha)</td><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right;color:var(--green);font-weight:700">SAR 1.43M</td><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right;color:var(--green);font-weight:700">SAR 850K</td></tr>
+          <tr style="background:#fff"><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06)">Date Dryer (50 t/day)</td><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right;color:var(--green);font-weight:700">SAR 420K</td><td style="padding:10px 14px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right;color:var(--green);font-weight:700">SAR 280K</td></tr>
+          <tr style="background:rgba(255,199,14,.1);font-weight:700"><td style="padding:10px 14px">Mixed Farm (all above)</td><td style="padding:10px 14px;text-align:right;color:var(--navy)">SAR 2.6M+</td><td style="padding:10px 14px;text-align:right;color:var(--navy)">SAR 1.6M+</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 9: VISION 2030 -->
+<section class="slide slide-gold">
+  <div class="sh-badge green">Vision 2030</div>
+  <div class="sh-title white">Aligned with Saudi Arabia's Food Security Agenda</div>
+  <div class="sh-div"></div>
+  <div class="g2" style="flex:1">
+    <div class="card-dk">
+      <div class="card-icon">🎯</div>
+      <div class="card-title w">National Agricultural Development Programme</div>
+      <div class="card-body w">TAQA Arabia's agricultural gas supply directly supports NADP goals to expand domestic food production. Gas enables year-round greenhouse cultivation and livestock expansion — critical for the 60% domestic production target.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">🌿</div>
+      <div class="card-title w">Saudi Green Initiative</div>
+      <div class="card-body w">Switching farms from diesel to gas reduces agricultural CO₂ emissions by up to 50%. TAQA Arabia's network supports the Saudi Green Initiative's agricultural sustainability targets and reduces the sector's carbon intensity per tonne of food produced.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">💧</div>
+      <div class="card-title w">Water-Energy Nexus</div>
+      <div class="card-body w">Saudi Arabia's water strategy requires maximising output per m³. Gas-powered pumping and gas-fired desalination improve water productivity — more food per drop of water, at lower energy cost. Supports NWC and Ministry of Environment targets.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">🤝</div>
+      <div class="card-title w">MEWA Partnership</div>
+      <div class="card-body w">TAQA Arabia works directly with the Ministry of Environment, Water and Agriculture (MEWA) to identify priority agricultural zones for gas network expansion. Government co-funding available for qualifying agricultural hubs under Vision 2030 programmes.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 10: PARTNERSHIP MODEL -->
+<section class="slide slide-content">
+  <div class="sh-badge">Commercial Model</div>
+  <div class="sh-title">Agricultural Partnership — Flexible, Farmer-Friendly Terms</div>
+  <div class="sh-div"></div>
+  <div style="flex:1;display:flex;gap:24px">
+    <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+      <div class="g2" style="gap:12px">
+        <div class="card" style="border-top:3px solid var(--green)">
+          <div class="card-icon">📋</div>
+          <div class="card-title">Seasonal Volume Flexibility</div>
+          <div class="card-body">Unlike diesel contracts, TAQA Arabia agricultural tariffs accommodate seasonal demand — higher in winter for heating, lower in summer. Pay for what you use, when you use it.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--green)">
+          <div class="card-icon">🔧</div>
+          <div class="card-title">Infrastructure Financing</div>
+          <div class="card-body">For large agricultural customers (>5,000 MMBtu/year), TAQA Arabia can finance the connection infrastructure and recover it through a capacity charge over 5–10 years — zero upfront CapEx.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--gold)">
+          <div class="card-icon">📊</div>
+          <div class="card-title">Multi-Site Agreements</div>
+          <div class="card-body">Agricultural groups with multiple farms, processing facilities, or cold storage sites can sign a single framework agreement with volume aggregation — unlocking the best tariff tier.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--gold)">
+          <div class="card-icon">🌾</div>
+          <div class="card-title">Cooperative Gas Supply</div>
+          <div class="card-body">Farmer cooperatives can jointly connect to TAQA Arabia's network with shared PRMS infrastructure — splitting connection costs across members while each pays only for individual consumption.</div>
+        </div>
+      </div>
+    </div>
+    <div style="flex:0 0 300px;display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--navy)">Tariff Tiers — Agriculture</div>
+      <table style="width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;font-size:12px;box-shadow:0 2px 10px rgba(0,32,96,.06)">
+        <thead><tr><th style="background:var(--navy);color:#fff;padding:10px 12px;text-align:left;font-size:10px">Volume (MMBtu/yr)</th><th style="background:var(--navy);color:#fff;padding:10px 12px;text-align:right;font-size:10px">Tariff (SAR/MMBtu)</th></tr></thead>
+        <tbody>
+          <tr style="background:#fff"><td style="padding:9px 12px;border-bottom:1px solid rgba(0,32,96,.06)">&lt; 2,000</td><td style="padding:9px 12px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right">1.2500</td></tr>
+          <tr style="background:#fff"><td style="padding:9px 12px;border-bottom:1px solid rgba(0,32,96,.06)">2,000 – 10,000</td><td style="padding:9px 12px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right">1.0776</td></tr>
+          <tr style="background:#fff"><td style="padding:9px 12px;border-bottom:1px solid rgba(0,32,96,.06)">10,000 – 50,000</td><td style="padding:9px 12px;border-bottom:1px solid rgba(0,32,96,.06);text-align:right">0.9500</td></tr>
+          <tr style="background:rgba(255,199,14,.1);font-weight:700"><td style="padding:9px 12px">&gt; 50,000 (large farm)</td><td style="padding:9px 12px;text-align:right;color:var(--navy)">Negotiated</td></tr>
+        </tbody>
+      </table>
+      <div style="background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);border-radius:10px;padding:14px;font-size:11.5px;color:#166534">
+        🌱 <strong>Agricultural customers receive:</strong> Free site survey, subsidised PRMS installation, 12-month payment holiday on connection fees, dedicated agricultural account manager.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 11: CONTACT -->
+<section class="slide slide-green">
+  <div class="sh-badge green">Get Started</div>
+  <div class="sh-title white">Connect Your Farm — Contact Our Agricultural Team</div>
+  <div class="sh-div"></div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:20px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <div style="background:rgba(255,199,14,.15);border:1px solid rgba(255,199,14,.3);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:30px;margin-bottom:8px">🌾</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Agricultural Hotline</div>
+        <div style="font-size:16px;font-weight:700;color:#fff">+966 11 XXX XXXX</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Agricultural Solutions Team<br/>Direct line — no call centres</div>
+      </div>
+      <div style="background:rgba(255,199,14,.15);border:1px solid rgba(255,199,14,.3);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:30px;margin-bottom:8px">✉️</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Email</div>
+        <div style="font-size:15px;font-weight:700;color:#fff">agri@taqa-arabia.com</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Farm surveys, feasibility studies<br/>RFP & bulk pricing requests</div>
+      </div>
+      <div style="background:rgba(255,199,14,.15);border:1px solid rgba(255,199,14,.3);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:30px;margin-bottom:8px">📍</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Field Visits</div>
+        <div style="font-size:16px;font-weight:700;color:#fff">We Come to You</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Our engineers visit your farm<br/>within 5 business days</div>
+      </div>
+    </div>
+    <div class="vision-box">
+      <div><div class="vb-title">🌱 Free Agricultural Energy Audit — No Obligation</div><div class="vb-sub">Request a comprehensive energy audit for your farm. We assess your current fuel spend, identify all gas applications, model your savings, and provide a full ROI report — free of charge.</div></div>
+      <div class="vb-btn">Request Audit →</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+      <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center;font-size:11px;color:rgba(255,255,255,.75)">🔧 <strong style="color:#fff">Free site survey</strong></div>
+      <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center;font-size:11px;color:rgba(255,255,255,.75)">💰 <strong style="color:#fff">CapEx financing</strong><br/>available</div>
+      <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center;font-size:11px;color:rgba(255,255,255,.75)">📋 <strong style="color:#fff">Seasonal tariff</strong><br/>flexibility</div>
+      <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center;font-size:11px;color:rgba(255,255,255,.75)">🤝 <strong style="color:#fff">MEWA-aligned</strong><br/>incentives</div>
+    </div>
+  </div>
+</section>
+
+</div>
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let cur = 0;
+const pbar = document.getElementById('pbar');
+const snum = document.getElementById('snum');
+function go(n) {
+  slides[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(total - 1, n));
+  slides[cur].classList.add('active');
+  pbar.style.width = ((cur + 1) / total * 100) + '%';
+  snum.textContent = (cur + 1) + ' / ' + total;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === total - 1;
+}
+document.getElementById('prev').addEventListener('click', () => go(cur - 1));
+document.getElementById('next').addEventListener('click', () => go(cur + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(cur + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(cur - 1);
+});
+go(0);
+</script>
+</body>
+</html>

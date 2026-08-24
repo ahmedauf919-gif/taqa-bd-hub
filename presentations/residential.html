@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TAQA Arabia — Residential Gas Solutions</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#002060;--blue:#005298;--gold:#FFC10E;--light:#f4f7fb;--muted:#64748b;--success:#16a34a;--warm:#ff8c00}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#111;overflow:hidden;height:100vh}
+.deck{position:relative;width:100vw;height:100vh}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .4s ease;overflow:hidden}
+.slide.active{opacity:1;pointer-events:all}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 28px;background:rgba(0,32,96,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,199,14,.2)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-size:13px;font-weight:600}
+.topbar .brand span{color:var(--gold)}
+.topbar .controls{display:flex;align-items:center;gap:10px}
+.btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;transition:.2s}
+.btn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.btn:disabled{opacity:.3;cursor:default}
+.progress{width:160px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--gold);transition:width .4s}
+.slide-num{color:rgba(255,255,255,.6);font-size:12px;min-width:48px;text-align:right}
+.logo-mark{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--navy);font-size:14px}
+
+/* SLIDE TYPES */
+.slide-cover{background:linear-gradient(135deg,#001a4d 0%,var(--navy) 40%,#003580 100%);justify-content:center;align-items:center;text-align:center;padding:80px 60px 60px}
+.slide-content{background:var(--light);padding:90px 60px 40px;gap:20px;display:flex;flex-direction:column}
+.slide-dark{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);padding:90px 60px 40px;color:#fff;gap:20px;display:flex;flex-direction:column}
+.slide-warm{background:linear-gradient(135deg,#fff8f0 0%,#fff3e0 100%);padding:90px 60px 40px;gap:20px;display:flex;flex-direction:column}
+.slide-green{background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);padding:90px 60px 40px;gap:20px;display:flex;flex-direction:column}
+
+/* COVER */
+.cover-badge{display:inline-block;background:rgba(255,199,14,.15);border:1px solid rgba(255,199,14,.4);color:var(--gold);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 18px;border-radius:20px;margin-bottom:24px}
+.cover-title{font-size:56px;font-weight:800;color:#fff;line-height:1.1;margin-bottom:16px}
+.cover-title span{color:var(--gold)}
+.cover-sub{font-size:18px;color:rgba(255,255,255,.65);max-width:620px;margin:0 auto 36px}
+.cover-logo{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.4);font-size:12px}
+
+/* SECTION HEADER */
+.sh-badge{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.sh-title{font-size:34px;font-weight:800;color:var(--navy);margin-bottom:6px;line-height:1.2}
+.sh-title.white{color:#fff}
+.sh-div{width:48px;height:4px;background:var(--gold);border-radius:2px;margin-bottom:20px}
+
+/* CARDS */
+.cards{display:grid;gap:14px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:#fff;border-radius:14px;padding:20px;border:1px solid rgba(0,32,96,.07);box-shadow:0 2px 10px rgba(0,32,96,.05)}
+.card-dk{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:20px}
+.card-icon{font-size:30px;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.card-title.w{color:#fff}
+.card-body{font-size:12.5px;color:var(--muted);line-height:1.6}
+.card-body.w{color:rgba(255,255,255,.7)}
+.big-num{font-size:38px;font-weight:900;line-height:1}
+
+/* BAR CHART */
+.bar-chart{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:12px}
+.bar-label{width:150px;color:var(--muted);font-weight:500;flex-shrink:0}
+.bar-track{flex:1;height:26px;background:rgba(0,32,96,.06);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:700;color:#fff}
+.bf-gold{background:var(--gold);color:var(--navy)}
+.bf-navy{background:var(--navy)}
+.bf-red{background:#dc2626}
+.bf-green{background:var(--success)}
+.bf-blue{background:var(--blue)}
+
+/* CHECK LIST */
+.cl{display:flex;flex-direction:column;gap:10px}
+.ci{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5}
+.ci.w{color:rgba(255,255,255,.8)}
+.cm{width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}
+.cm.b{background:var(--blue);color:#fff}
+.cm.g{background:var(--success);color:#fff}
+
+/* TIMELINE */
+.tl{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding-bottom:18px;position:relative}
+.tl-item:not(:last-child)::after{content:'';position:absolute;left:17px;top:38px;bottom:0;width:2px;background:rgba(0,32,96,.1)}
+.tl-dot{width:36px;height:36px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;z-index:1}
+.tl-dot.gold{background:var(--gold);color:var(--navy)}
+.tl-head{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.tl-body{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* SAVING BOX */
+.saving-box{border-radius:14px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sb-green{background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0}
+.sb-title{font-size:13px;font-weight:700}
+.sb-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.sb-val{font-size:26px;font-weight:900;color:var(--success);text-align:right;flex-shrink:0}
+.sb-lbl{font-size:10px;color:var(--muted);text-align:right}
+
+/* APP GRID */
+.app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1}
+.app-card{background:#fff;border-radius:16px;padding:22px;display:flex;flex-direction:column;align-items:center;text-align:center;border:2px solid transparent;transition:.2s;box-shadow:0 2px 12px rgba(0,32,96,.06)}
+.app-card:hover{border-color:var(--gold)}
+.app-icon{font-size:40px;margin-bottom:10px}
+.app-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.app-desc{font-size:11.5px;color:var(--muted);line-height:1.5}
+.app-saving{margin-top:8px;background:rgba(255,199,14,.15);color:#92400e;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px}
+
+.highlight-box{background:var(--gold);border-radius:14px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between}
+.hb-title{font-size:16px;font-weight:800;color:var(--navy)}
+.hb-sub{font-size:12px;color:rgba(0,32,96,.6);margin-top:4px}
+.hb-btn{background:var(--navy);color:#fff;padding:10px 24px;border-radius:8px;font-weight:700;font-size:13px;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <button onclick="window.opener?window.close():window.location.href='/'" class="btn" style="display:flex;align-items:center;gap:5px;padding:5px 12px">&#8962; Home</button>
+    <div class="brand"><div class="logo-mark">T</div>TAQA Arabia &nbsp;<span>| Residential Gas Solutions</span></div>
+  </div>
+  <div class="controls">
+    <button class="btn" id="prev">◀ Prev</button>
+    <div class="progress"><div class="progress-fill" id="pbar"></div></div>
+    <button class="btn" id="next">Next ▶</button>
+    <span class="slide-num" id="snum">1 / 11</span>
+  </div>
+</div>
+
+<div class="deck">
+
+<!-- SLIDE 1: COVER -->
+<section class="slide slide-cover active">
+  <div class="cover-badge">Home Energy · Natural Gas · Saudi Arabia</div>
+  <div class="cover-title">Natural Gas<br/>for Your <span>Home</span></div>
+  <div class="cover-sub">Reliable, affordable piped natural gas delivered directly to your door — cooking, heating, and comfort powered by TAQA Arabia</div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:44px">
+    <span style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);font-size:12px;padding:6px 16px;border-radius:20px">🍳 Cooking</span>
+    <span style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);font-size:12px;padding:6px 16px;border-radius:20px">🚿 Water Heating</span>
+    <span style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);font-size:12px;padding:6px 16px;border-radius:20px">❄️ Central Cooling</span>
+    <span style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);font-size:12px;padding:6px 16px;border-radius:20px">🌡️ Space Heating</span>
+    <span style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);font-size:12px;padding:6px 16px;border-radius:20px">👕 Laundry</span>
+  </div>
+  <div style="display:flex;gap:36px;justify-content:center">
+    <div style="text-align:center"><div style="font-size:38px;font-weight:900;color:var(--gold)">40–60%</div><div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Savings vs LPG</div></div>
+    <div style="width:1px;background:rgba(255,255,255,.15)"></div>
+    <div style="text-align:center"><div style="font-size:38px;font-weight:900;color:var(--gold)">24/7</div><div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Uninterrupted Supply</div></div>
+    <div style="width:1px;background:rgba(255,255,255,.15)"></div>
+    <div style="text-align:center"><div style="font-size:38px;font-weight:900;color:var(--gold)">0</div><div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Cylinders Needed</div></div>
+  </div>
+  <div class="cover-logo"><div class="logo-mark">T</div>TAQA Arabia · طاقة العربية © 2025</div>
+</section>
+
+<!-- SLIDE 2: THE PROBLEM WITH LPG -->
+<section class="slide slide-warm">
+  <div class="sh-badge">The Problem Today</div>
+  <div class="sh-title">Life with LPG Cylinders — The Frustrations You Know</div>
+  <div class="sh-div"></div>
+  <div class="cards g3" style="flex:1">
+    <div class="card" style="border-left:4px solid #dc2626">
+      <div class="card-icon">🚫</div>
+      <div class="card-title">Running Out Mid-Cooking</div>
+      <div class="card-body">Cylinder runs empty without warning — in the middle of a family meal, guests visiting, or Ramadan gatherings. No advance notice, no backup.</div>
+    </div>
+    <div class="card" style="border-left:4px solid #dc2626">
+      <div class="card-icon">⏳</div>
+      <div class="card-title">Waiting for Deliveries</div>
+      <div class="card-body">Calling the delivery company, waiting hours or days, coordination issues. Delivery schedules don't fit your lifestyle — you wait on their terms.</div>
+    </div>
+    <div class="card" style="border-left:4px solid #dc2626">
+      <div class="card-icon">💰</div>
+      <div class="card-title">Unpredictable Costs</div>
+      <div class="card-body">LPG prices fluctuate with global oil markets. You never know what the next cylinder will cost — impossible to budget household energy expenses reliably.</div>
+    </div>
+    <div class="card" style="border-left:4px solid #f59e0b">
+      <div class="card-icon">⚠️</div>
+      <div class="card-title">Safety Concerns</div>
+      <div class="card-body">Cylinder storage, aging hoses, regulator leaks. LPG is heavier than air — leaks accumulate at floor level creating explosion risk in kitchens and utility rooms.</div>
+    </div>
+    <div class="card" style="border-left:4px solid #f59e0b">
+      <div class="card-icon">🏠</div>
+      <div class="card-title">Storage Space Wasted</div>
+      <div class="card-body">Bulky cylinders take up kitchen, balcony, or utility room space. Many families keep spare cylinders "just in case" — taking up precious home space.</div>
+    </div>
+    <div class="card" style="border-left:4px solid #f59e0b">
+      <div class="card-icon">🌍</div>
+      <div class="card-title">Environmental Footprint</div>
+      <div class="card-body">Cylinder transport vehicles, packaging, and cylinder manufacturing all add to your carbon footprint — far higher than efficient piped gas distribution.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: THE SOLUTION -->
+<section class="slide slide-dark">
+  <div class="sh-badge">The Solution</div>
+  <div class="sh-title white">TAQA Arabia — Gas Piped Directly to Your Home</div>
+  <div class="sh-div"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="cl">
+        <div class="ci w"><div class="cm g">✓</div><div><strong>Continuous supply</strong> — piped gas arrives 24 hours a day, 365 days a year. You'll never run out in the middle of cooking again.</div></div>
+        <div class="ci w"><div class="cm g">✓</div><div><strong>No cylinders, no deliveries</strong> — gas arrives through your wall just like electricity or water. No storage, no scheduling, no waiting.</div></div>
+        <div class="ci w"><div class="cm g">✓</div><div><strong>Fixed, regulated pricing</strong> — TAQA Arabia's tariff is approved by the Saudi regulator and reviewed every 5 years. No surprise price jumps.</div></div>
+        <div class="ci w"><div class="cm g">✓</div><div><strong>Smart metering</strong> — pay only for what you use. Monthly bills with consumption history. No estimation — accurate, transparent billing every time.</div></div>
+        <div class="ci w"><div class="cm g">✓</div><div><strong>Professional installation</strong> — TAQA Arabia engineers install, inspect, and certify all connections. Licensed, insured, and compliant with Saudi building code.</div></div>
+        <div class="ci w"><div class="cm g">✓</div><div><strong>24/7 emergency line</strong> — if you ever smell gas or need assistance, one call gets a certified technician to your door within hours.</div></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card-dk" style="text-align:center">
+          <div style="font-size:36px;font-weight:900;color:var(--gold)">40%</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;text-transform:uppercase;letter-spacing:.5px">Cost Saving vs LPG</div>
+        </div>
+        <div class="card-dk" style="text-align:center">
+          <div style="font-size:36px;font-weight:900;color:var(--gold)">60%</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;text-transform:uppercase;letter-spacing:.5px">Cost Saving vs Electricity</div>
+        </div>
+        <div class="card-dk" style="text-align:center">
+          <div style="font-size:36px;font-weight:900;color:var(--gold)">30%</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;text-transform:uppercase;letter-spacing:.5px">Less CO₂ than LPG</div>
+        </div>
+        <div class="card-dk" style="text-align:center">
+          <div style="font-size:36px;font-weight:900;color:var(--gold)">∞</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;text-transform:uppercase;letter-spacing:.5px">No More Disruptions</div>
+        </div>
+      </div>
+      <div style="background:rgba(255,199,14,.12);border:1px solid rgba(255,199,14,.3);border-radius:12px;padding:16px">
+        <div style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:6px">The TAQA Arabia Promise</div>
+        <div style="font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.6">"We deliver natural gas directly to your home through a safe, reliable, government-regulated pipeline network — so you can focus on what matters: your family."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: APPLICATIONS -->
+<section class="slide slide-content">
+  <div class="sh-badge">Home Applications</div>
+  <div class="sh-title">Everything You Can Power with Natural Gas</div>
+  <div class="sh-div"></div>
+  <div class="app-grid">
+    <div class="app-card">
+      <div class="app-icon">🍳</div>
+      <div class="app-name">Cooking Hobs & Ovens</div>
+      <div class="app-desc">Gas hobs offer instant heat control — perfect for Saudi cuisine, bread baking, and precise cooking. Chef's choice worldwide.</div>
+      <div class="app-saving">Save 45% vs. Electric Hobs</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon">🚿</div>
+      <div class="app-name">Instant Water Heaters</div>
+      <div class="app-desc">Gas water heaters deliver unlimited hot water on demand. No waiting, no tank size limit — hot water always ready for your whole family.</div>
+      <div class="app-saving">Save 55% vs. Electric Heater</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon">❄️</div>
+      <div class="app-name">Gas Absorption Chillers</div>
+      <div class="app-desc">Gas-powered air conditioning (absorption technology) for larger villas and compounds. Dramatically reduces electricity bills in Saudi summers.</div>
+      <div class="app-saving">Save 40% on Cooling Bills</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon">🌡️</div>
+      <div class="app-name">Space & Radiant Heating</div>
+      <div class="app-desc">Efficient gas heaters for cooler months. Northern Saudi winters can be cold — gas heating is far more cost-effective than electric alternatives.</div>
+      <div class="app-saving">Save 60% vs. Electric Heaters</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon">👕</div>
+      <div class="app-name">Gas Clothes Dryers</div>
+      <div class="app-desc">Gas dryers work faster and are gentler on clothes. Dry a full load in 30 minutes vs. 50+ with electric. Clothes retain colour and texture longer.</div>
+      <div class="app-saving">Save 50% vs. Electric Dryer</div>
+    </div>
+    <div class="app-card">
+      <div class="app-icon">🏊</div>
+      <div class="app-name">Pool & Jacuzzi Heating</div>
+      <div class="app-desc">Heat your pool or jacuzzi rapidly with gas. Maintain comfortable temperatures year-round at a fraction of the cost of electric heat pumps.</div>
+      <div class="app-saving">Save 35% vs. Heat Pump</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: COST SAVINGS -->
+<section class="slide slide-green">
+  <div class="sh-badge">Financial Benefits</div>
+  <div class="sh-title">Real Savings for Saudi Families</div>
+  <div class="sh-div"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px">Annual Energy Cost — Average Saudi Household (SAR)</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">TAQA Natural Gas</span><div class="bar-track"><div class="bar-fill bf-gold" style="width:22%">1,200</div></div></div>
+        <div class="bar-row"><span class="bar-label">LPG Cylinders</span><div class="bar-track"><div class="bar-fill bf-navy" style="width:50%">2,800</div></div></div>
+        <div class="bar-row"><span class="bar-label">Electric Cooking</span><div class="bar-track"><div class="bar-fill bf-red" style="width:68%">3,800</div></div></div>
+        <div class="bar-row"><span class="bar-label">Electric + AC heating</span><div class="bar-track"><div class="bar-fill bf-red" style="width:88%">4,900</div></div></div>
+      </div>
+      <div style="margin-top:16px;background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0;border-radius:12px;padding:16px">
+        <div style="font-size:13px;font-weight:700;color:#15803d;margin-bottom:4px">Switching from LPG to TAQA Gas:</div>
+        <div style="font-size:28px;font-weight:900;color:#15803d">SAR 1,600/year</div>
+        <div style="font-size:11px;color:#166534;margin-top:2px">average household annual saving</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="saving-box sb-green">
+        <div><div class="sb-title" style="color:#15803d">🍳 Cooking (Hob + Oven)</div><div class="sb-sub">2,000 cooking hours/year at gas rate</div></div>
+        <div><div class="sb-val">SAR 480</div><div class="sb-lbl">saved vs. electric</div></div>
+      </div>
+      <div class="saving-box sb-green">
+        <div><div class="sb-title" style="color:#15803d">🚿 Hot Water (Family of 5)</div><div class="sb-sub">Daily showers, wudu, cleaning</div></div>
+        <div><div class="sb-val">SAR 720</div><div class="sb-lbl">saved vs. electric heater</div></div>
+      </div>
+      <div class="saving-box sb-green">
+        <div><div class="sb-title" style="color:#15803d">🌡️ Winter Heating (3 months)</div><div class="sb-sub">2-3 bedroom area, Riyadh climate</div></div>
+        <div><div class="sb-val">SAR 320</div><div class="sb-lbl">saved vs. electric heaters</div></div>
+      </div>
+      <div style="background:rgba(255,199,14,.12);border:1px solid rgba(255,199,14,.3);border-radius:10px;padding:12px;font-size:11.5px;color:#92400e">
+        💡 <strong>Connection payback:</strong> With savings of SAR 1,600/year, the one-time connection investment typically pays back in <strong>less than 18 months.</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: SAFETY -->
+<section class="slide slide-dark">
+  <div class="sh-badge">Safety First</div>
+  <div class="sh-title white">Your Family's Safety — Our Priority</div>
+  <div class="sh-div"></div>
+  <div class="cards g3" style="flex:1">
+    <div class="card-dk">
+      <div class="card-icon">🔒</div>
+      <div class="card-title w">Odorant Added</div>
+      <div class="card-body w">Natural gas is naturally odourless — TAQA Arabia adds THT odorant (rotten egg smell) to every cubic meter. You'll smell any leak immediately, long before it reaches dangerous levels.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">⚡</div>
+      <div class="card-title w">Automatic Shutoff Valves</div>
+      <div class="card-body w">Emergency shutoff installed at the meter and at each appliance. In case of a fire, seismic event, or detected leak, the system shuts automatically — no action needed.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">🛡️</div>
+      <div class="card-title w">Certified Installation Only</div>
+      <div class="card-body w">All pipework, appliances, and connections are installed exclusively by TAQA Arabia's licensed technicians — no DIY permitted. Full civil defence compliance documentation provided.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">📱</div>
+      <div class="card-title w">Smart Leak Detectors</div>
+      <div class="card-body w">Optional TAQA SmartHome gas detectors connect to your phone. Real-time alerts if any gas is detected — with automatic valve closure triggered remotely.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">🔧</div>
+      <div class="card-title w">Annual Safety Check</div>
+      <div class="card-body w">Free annual inspection of all gas appliances, pipework, and meters by certified TAQA engineers — mandatory for continued supply and included in your tariff.</div>
+    </div>
+    <div class="card-dk">
+      <div class="card-icon">🚒</div>
+      <div class="card-title w">24/7 Emergency Response</div>
+      <div class="card-body w">Gas emergency hotline answered 24/7. Response target: on-site within 2 hours anywhere in our service area. No call centre — direct to a technician.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: CONNECTION STEPS -->
+<section class="slide slide-content">
+  <div class="sh-badge">Getting Connected</div>
+  <div class="sh-title">5 Simple Steps to Piped Gas at Home</div>
+  <div class="sh-div"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1">
+    <div>
+      <div class="tl">
+        <div class="tl-item">
+          <div class="tl-dot gold">1</div>
+          <div><div class="tl-head">Register Online or By Phone</div><div class="tl-body">Visit taqa-arabia.com or call our residential team. Provide your home address and contact details. Takes 5 minutes.</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">2</div>
+          <div><div class="tl-head">Site Survey (Free)</div><div class="tl-body">Our engineer visits your home within 3 days. Assesses internal pipework routing, meter location, and appliance connection points. No charge.</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">3</div>
+          <div><div class="tl-head">Sign the Connection Agreement</div><div class="tl-body">Review and sign the supply agreement. One-time connection fee applies (subsidised for government housing / early registrations). Monthly billing begins after commissioning.</div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="tl">
+        <div class="tl-item">
+          <div class="tl-dot">4</div>
+          <div><div class="tl-head">Installation (1–2 Days)</div><div class="tl-body">Certified plumbers lay internal gas pipes, install meter, connect appliances. Clean, minimal disruption — all work completed within your home on agreed dates.</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">5</div>
+          <div><div class="tl-head">Commissioning & Handover</div><div class="tl-body">Final pressure test, odorant check, appliance commissioning. You receive a safety briefing, emergency card, and billing instructions. Gas goes live!</div></div>
+        </div>
+        <div style="background:rgba(255,199,14,.12);border:1px solid rgba(255,199,14,.3);border-radius:10px;padding:14px;margin-top:4px">
+          <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:4px">⏱️ Total time from registration to live gas:</div>
+          <div style="font-size:22px;font-weight:900;color:var(--navy)">As fast as 2 weeks</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Subject to local authority permit timing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: BILLING -->
+<section class="slide slide-content">
+  <div class="sh-badge">Billing & Metering</div>
+  <div class="sh-title">Simple, Transparent Monthly Billing</div>
+  <div class="sh-div"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="cards g2" style="gap:12px">
+        <div class="card" style="text-align:center;border-top:3px solid var(--gold)">
+          <div class="card-icon">📊</div>
+          <div class="card-title">Smart Meter</div>
+          <div class="card-body">Digital gas meter records exact consumption. No estimation, no overpaying. Real-time reading via our app.</div>
+        </div>
+        <div class="card" style="text-align:center;border-top:3px solid var(--gold)">
+          <div class="card-icon">📱</div>
+          <div class="card-title">TAQA App</div>
+          <div class="card-body">Monitor daily, weekly, monthly usage. Set budget alerts. View bills, pay online, report issues — all in one app.</div>
+        </div>
+        <div class="card" style="text-align:center;border-top:3px solid var(--blue)">
+          <div class="card-icon">🧾</div>
+          <div class="card-title">Monthly Invoice</div>
+          <div class="card-body">Clear breakdown: opening/closing meter reading, volume used, unit rate, total payable. Delivered by email and SMS.</div>
+        </div>
+        <div class="card" style="text-align:center;border-top:3px solid var(--blue)">
+          <div class="card-icon">💳</div>
+          <div class="card-title">Easy Payment</div>
+          <div class="card-body">Pay via SADAD, Apple Pay, STC Pay, bank transfer, or auto-debit. Never miss a payment with auto-pay setup.</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px">Sample Monthly Bill — 4-bedroom Villa</div>
+      <div style="background:#fff;border-radius:12px;border:1px solid rgba(0,32,96,.1);overflow:hidden;box-shadow:0 2px 10px rgba(0,32,96,.06)">
+        <div style="background:var(--navy);color:#fff;padding:12px 16px;font-size:12px;font-weight:700">TAQA Arabia Monthly Gas Statement — October 2025</div>
+        <div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;font-size:12.5px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Opening Reading</span><span style="font-weight:600">12,340 SCF</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Closing Reading</span><span style="font-weight:600">12,984 SCF</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Volume Consumed</span><span style="font-weight:600">644 SCF (695 MMBtu)</span></div>
+          <div style="height:1px;background:rgba(0,32,96,.08)"></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Distribution Tariff</span><span style="font-weight:600">SAR 1.0776/MMBtu</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Gas Commodity</span><span style="font-weight:600">SAR 10.3125/MMBtu</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Sub-total</span><span style="font-weight:600">SAR 79.20</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">VAT 15%</span><span style="font-weight:600">SAR 11.88</span></div>
+          <div style="height:1px;background:rgba(0,32,96,.08)"></div>
+          <div style="display:flex;justify-content:space-between;background:rgba(255,199,14,.1);padding:8px;border-radius:6px;margin-top:2px"><span style="font-weight:800;color:var(--navy)">TOTAL DUE</span><span style="font-weight:900;color:var(--navy);font-size:16px">SAR 91.08</span></div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);font-style:italic">*Sample for illustration. Actual bill depends on your consumption pattern.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 9: ENV BENEFITS -->
+<section class="slide slide-dark">
+  <div class="sh-badge">Environment</div>
+  <div class="sh-title white">A Greener Choice for Your Family & KSA</div>
+  <div class="sh-div"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card-dk" style="text-align:center"><div style="font-size:32px;font-weight:900;color:var(--gold)">30%</div><div style="font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Less CO₂ vs LPG</div></div>
+        <div class="card-dk" style="text-align:center"><div style="font-size:32px;font-weight:900;color:var(--gold)">50%</div><div style="font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Less CO₂ vs Charcoal</div></div>
+        <div class="card-dk" style="text-align:center"><div style="font-size:32px;font-weight:900;color:var(--gold)">Zero</div><div style="font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Cylinder Waste</div></div>
+        <div class="card-dk" style="text-align:center"><div style="font-size:32px;font-weight:900;color:var(--gold)">Zero</div><div style="font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Delivery Emissions</div></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="cl">
+        <div class="ci w"><div class="cm g">🌱</div><div>Natural gas is the <strong>cleanest fossil fuel</strong> — ideal bridge fuel as Saudi Arabia transitions to renewable energy under Vision 2030.</div></div>
+        <div class="ci w"><div class="cm g">♻️</div><div>Pipeline distribution has a <strong>95% lower delivery carbon footprint</strong> than individual cylinder transport to thousands of homes.</div></div>
+        <div class="ci w"><div class="cm g">🌍</div><div>TAQA Arabia supports the <strong>Saudi Green Initiative</strong> — our operations target net-zero Scope 1 emissions by 2040.</div></div>
+        <div class="ci w"><div class="cm g">🔭</div><div>Our network is <strong>hydrogen-ready</strong> — as green hydrogen becomes available in KSA, your home appliances can seamlessly transition with minimal modification.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 10: COMMUNITY -->
+<section class="slide slide-content">
+  <div class="sh-badge">Coverage</div>
+  <div class="sh-title">Growing Communities Powered by TAQA Arabia</div>
+  <div class="sh-div"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="cards g2" style="gap:12px">
+        <div class="card" style="text-align:center">
+          <div style="font-size:32px;font-weight:900;color:var(--navy)">205</div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Residential Customers</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">Connected & billing today</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:32px;font-weight:900;color:var(--navy)">36</div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">New Homes / Year</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">Planned connection rate</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:32px;font-weight:900;color:var(--gold)">569</div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Total Network Customers</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">Residential + Commercial</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:32px;font-weight:900;color:var(--success)">98%</div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Customer Satisfaction</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px">Annual survey 2024</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--navy)">What Our Residents Say</div>
+      <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid rgba(0,32,96,.08);box-shadow:0 2px 10px rgba(0,32,96,.05)">
+        <div style="font-size:20px;color:var(--gold);margin-bottom:6px">❝</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6;font-style:italic">"We haven't ordered an LPG cylinder in two years. The gas just comes — always there when we need it. Our kitchen feels like a proper chef's kitchen now."</div>
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-top:10px">— Um Khalid, Riyadh Villa Owner</div>
+      </div>
+      <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid rgba(0,32,96,.08);box-shadow:0 2px 10px rgba(0,32,96,.05)">
+        <div style="font-size:20px;color:var(--gold);margin-bottom:6px">❝</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6;font-style:italic">"My electricity bill dropped by SAR 400/month after switching to gas water heating. The connection paid for itself in less than a year. I recommend it to everyone."</div>
+        <div style="font-size:11px;font-weight:700;color:var(--navy);margin-top:10px">— Mohammed Al-Rasheed, Compound Resident</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 11: CONTACT -->
+<section class="slide slide-dark">
+  <div class="sh-badge">Join Us</div>
+  <div class="sh-title white">Register Today — Start Saving</div>
+  <div class="sh-div"></div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:20px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <div style="background:rgba(255,199,14,.12);border:1px solid rgba(255,199,14,.3);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:30px;margin-bottom:8px">📞</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Call</div>
+        <div style="font-size:16px;font-weight:700;color:#fff">800-TAQA-GAS</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Free toll number<br/>Daily 8:00–20:00</div>
+      </div>
+      <div style="background:rgba(255,199,14,.12);border:1px solid rgba(255,199,14,.3);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:30px;margin-bottom:8px">🌐</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Register Online</div>
+        <div style="font-size:16px;font-weight:700;color:#fff">taqa-arabia.com/home</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">5-minute registration<br/>Available in Arabic & English</div>
+      </div>
+      <div style="background:rgba(255,199,14,.12);border:1px solid rgba(255,199,14,.3);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:30px;margin-bottom:8px">📱</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Download App</div>
+        <div style="font-size:16px;font-weight:700;color:#fff">TAQA Home App</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">App Store & Google Play<br/>Monitor · Pay · Report</div>
+      </div>
+    </div>
+    <div class="highlight-box">
+      <div><div class="hb-title">🎁 Early Registration Offer — 50% Off Connection Fee</div><div class="hb-sub">Register by 31 March 2026 and receive a 50% discount on the connection fee plus free first-year safety inspection. Limited homes per district.</div></div>
+      <div class="hb-btn">Register Now →</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:14px;text-align:center;font-size:12px;color:rgba(255,255,255,.7)">🔧 <strong style="color:#fff">Free site survey</strong><br/>No obligation</div>
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:14px;text-align:center;font-size:12px;color:rgba(255,255,255,.7)">📋 <strong style="color:#fff">We handle all permits</strong><br/>Municipality, GAZT</div>
+      <div style="background:rgba(255,255,255,.06);border-radius:10px;padding:14px;text-align:center;font-size:12px;color:rgba(255,255,255,.7)">🛡️ <strong style="color:#fff">Lifetime support</strong><br/>24/7 emergency line</div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let cur = 0;
+const pbar = document.getElementById('pbar');
+const snum = document.getElementById('snum');
+function go(n) {
+  slides[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(total - 1, n));
+  slides[cur].classList.add('active');
+  pbar.style.width = ((cur + 1) / total * 100) + '%';
+  snum.textContent = (cur + 1) + ' / ' + total;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === total - 1;
+}
+document.getElementById('prev').addEventListener('click', () => go(cur - 1));
+document.getElementById('next').addEventListener('click', () => go(cur + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(cur + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(cur - 1);
+});
+go(0);
+</script>
+</body>
+</html>

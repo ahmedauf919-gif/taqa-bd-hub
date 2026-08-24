@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TAQA Arabia — Industrial Gas Solutions</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--navy:#002060;--blue:#005298;--gold:#FFC10E;--light:#f4f7fb;--muted:#64748b;--success:#16a34a}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#111;overflow:hidden;height:100vh}
+.deck{position:relative;width:100vw;height:100vh}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .4s ease;overflow:hidden}
+.slide.active{opacity:1;pointer-events:all}
+
+/* NAV BAR */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 28px;background:rgba(0,32,96,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,199,14,.2)}
+.topbar .brand{display:flex;align-items:center;gap:10px;color:#fff;font-size:13px;font-weight:600;letter-spacing:.3px}
+.topbar .brand span{color:var(--gold)}
+.topbar .controls{display:flex;align-items:center;gap:10px}
+.btn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;padding:5px 14px;border-radius:6px;font-size:12px;cursor:pointer;transition:.2s}
+.btn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.btn:disabled{opacity:.3;cursor:default}
+.progress{width:160px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--gold);transition:width .4s}
+.slide-num{color:rgba(255,255,255,.6);font-size:12px;min-width:48px;text-align:right}
+
+/* SLIDE LAYOUTS */
+.slide-cover{background:linear-gradient(135deg,var(--navy) 0%,#003080 50%,#001540 100%);justify-content:center;align-items:center;text-align:center;padding:80px 60px 60px}
+.slide-content{background:var(--light);padding:90px 60px 40px;gap:24px}
+.slide-dark{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);padding:90px 60px 40px;color:#fff;gap:24px}
+.slide-split{display:grid!important;grid-template-columns:1fr 1fr;gap:0;background:#fff;padding-top:64px}
+.slide-metrics{background:var(--navy);padding:90px 60px 40px;color:#fff;gap:24px}
+
+/* COVER SLIDE */
+.cover-badge{display:inline-block;background:rgba(255,199,14,.15);border:1px solid rgba(255,199,14,.4);color:var(--gold);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 18px;border-radius:20px;margin-bottom:24px}
+.cover-title{font-size:54px;font-weight:800;color:#fff;line-height:1.1;margin-bottom:16px}
+.cover-title span{color:var(--gold)}
+.cover-sub{font-size:18px;color:rgba(255,255,255,.65);max-width:600px;margin:0 auto 40px}
+.cover-pills{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:48px}
+.pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);font-size:12px;padding:6px 16px;border-radius:20px}
+.cover-logo{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.5);font-size:12px}
+.logo-mark{width:32px;height:32px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--navy);font-size:14px}
+
+/* SECTION HEADER */
+.section-badge{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.section-title{font-size:34px;font-weight:800;color:var(--navy);margin-bottom:6px;line-height:1.2}
+.section-title.white{color:#fff}
+.section-divider{width:48px;height:4px;background:var(--gold);border-radius:2px;margin-bottom:24px}
+
+/* CARDS */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;flex:1}
+.cards-2{grid-template-columns:repeat(2,1fr)}
+.cards-4{grid-template-columns:repeat(4,1fr)}
+.card{background:#fff;border-radius:14px;padding:22px;border:1px solid rgba(0,32,96,.08);box-shadow:0 2px 12px rgba(0,32,96,.06)}
+.card-dark{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:22px}
+.card-gold{background:linear-gradient(135deg,var(--gold) 0%,#ffd04e 100%);border-radius:14px;padding:22px;color:var(--navy)}
+.card-icon{font-size:28px;margin-bottom:12px}
+.card-num{font-size:36px;font-weight:900;color:var(--navy);line-height:1}
+.card-num.white{color:#fff}
+.card-num.gold{color:var(--gold)}
+.card-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.card-label.white{color:rgba(255,255,255,.6)}
+.card-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.card-title.white{color:#fff}
+.card-body{font-size:12.5px;color:var(--muted);line-height:1.6}
+.card-body.white{color:rgba(255,255,255,.7)}
+
+/* BAR CHART */
+.bar-chart{display:flex;flex-direction:column;gap:12px;flex:1}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:12px}
+.bar-label{width:160px;color:var(--muted);font-weight:500;flex-shrink:0}
+.bar-label.white{color:rgba(255,255,255,.7)}
+.bar-track{flex:1;height:28px;background:rgba(0,32,96,.06);border-radius:6px;overflow:hidden;position:relative}
+.bar-track.dark{background:rgba(255,255,255,.08)}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:700;color:#fff;transition:width .8s ease}
+.bar-fill.navy{background:var(--navy)}
+.bar-fill.blue{background:var(--blue)}
+.bar-fill.gold{background:var(--gold);color:var(--navy)}
+.bar-fill.green{background:var(--success)}
+.bar-fill.red{background:#dc2626}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,32,96,.08)}
+.data-table th{background:var(--navy);color:#fff;padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:left}
+.data-table th:first-child{border-radius:12px 0 0 0}
+.data-table th:last-child{border-radius:0 12px 0 0}
+.data-table td{padding:11px 16px;font-size:12.5px;border-bottom:1px solid rgba(0,32,96,.06);background:#fff;vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:last-child td:first-child{border-radius:0 0 0 12px}
+.data-table tr:last-child td:last-child{border-radius:0 0 12px 0}
+.data-table .highlight{background:rgba(255,199,14,.12);font-weight:700}
+.badge-green{background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.badge-red{background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+.badge-gold{background:rgba(255,199,14,.2);color:#92400e;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0;flex:1}
+.timeline-item{display:flex;gap:16px;padding-bottom:20px;position:relative}
+.timeline-item:not(:last-child)::after{content:'';position:absolute;left:19px;top:40px;bottom:0;width:2px;background:rgba(0,32,96,.1)}
+.tl-dot{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;z-index:1}
+.tl-dot.gold{background:var(--gold);color:var(--navy)}
+.tl-content{flex:1;padding-top:8px}
+.tl-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.tl-body{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* SPLIT SLIDE */
+.split-left{background:var(--navy);padding:90px 48px 48px;color:#fff;display:flex;flex-direction:column;gap:16px}
+.split-right{background:#fff;padding:90px 48px 48px;display:flex;flex-direction:column;gap:16px}
+
+/* CHECKMARK LIST */
+.check-list{display:flex;flex-direction:column;gap:10px}
+.check-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);line-height:1.5}
+.check-item.white{color:rgba(255,255,255,.8)}
+.check-mark{width:20px;height:20px;border-radius:50%;background:var(--gold);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px}
+.check-mark.blue{background:var(--blue);color:#fff}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;flex:1}
+.contact-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:8px}
+.contact-icon{font-size:24px;margin-bottom:4px}
+.contact-title{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px}
+.contact-info{font-size:14px;color:#fff;font-weight:500}
+.contact-sub{font-size:12px;color:rgba(255,255,255,.5)}
+
+.tag{display:inline-block;background:rgba(255,199,14,.15);border:1px solid rgba(255,199,14,.3);color:var(--gold);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-bottom:8px}
+.highlight-num{font-size:48px;font-weight:900;color:var(--gold);line-height:1}
+.hl-label{font-size:12px;color:rgba(255,255,255,.6);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <button onclick="window.opener?window.close():window.location.href='/'" class="btn" style="display:flex;align-items:center;gap:5px;padding:5px 12px">&#8962; Home</button>
+    <div class="brand"><div class="logo-mark">T</div>TAQA Arabia &nbsp;<span>| Industrial Solutions</span></div>
+  </div>
+  <div class="controls">
+    <button class="btn" id="prev">◀ Prev</button>
+    <div class="progress"><div class="progress-fill" id="pbar"></div></div>
+    <button class="btn" id="next">Next ▶</button>
+    <span class="slide-num" id="snum">1 / 11</span>
+  </div>
+</div>
+
+<div class="deck">
+
+<!-- SLIDE 1: COVER -->
+<section class="slide slide-cover active">
+  <div class="cover-badge">Confidential · Client Presentation · 2025</div>
+  <div class="cover-title">Industrial Gas<br/><span>Solutions</span></div>
+  <div class="cover-sub">Reliable, cost-competitive piped natural gas for Saudi Arabia's industrial sector — delivered by TAQA Arabia</div>
+  <div class="cover-pills">
+    <span class="pill">🏭 Manufacturing</span>
+    <span class="pill">⚗️ Petrochemicals</span>
+    <span class="pill">🥛 Food & Beverage</span>
+    <span class="pill">🧱 Building Materials</span>
+    <span class="pill">🔩 Metal Fabrication</span>
+    <span class="pill">🌡️ Industrial Heating</span>
+  </div>
+  <div style="display:flex;gap:32px;justify-content:center">
+    <div style="text-align:center"><div style="font-size:36px;font-weight:900;color:var(--gold)">203</div><div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">MMSCFD Capacity</div></div>
+    <div style="width:1px;background:rgba(255,255,255,.15)"></div>
+    <div style="text-align:center"><div style="font-size:36px;font-weight:900;color:var(--gold)">569+</div><div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Customers Served</div></div>
+    <div style="width:1px;background:rgba(255,255,255,.15)"></div>
+    <div style="text-align:center"><div style="font-size:36px;font-weight:900;color:var(--gold)">30yr</div><div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px">Concession License</div></div>
+  </div>
+  <div class="cover-logo"><div class="logo-mark">T</div>TAQA Arabia Company · طاقة العربية © 2025</div>
+</section>
+
+<!-- SLIDE 2: CHALLENGE -->
+<section class="slide slide-dark">
+  <div class="section-badge">The Challenge</div>
+  <div class="section-title white">Saudi Industry Faces Rising Energy Costs</div>
+  <div class="section-divider"></div>
+  <div class="cards cards-2" style="flex:1">
+    <div class="card-dark">
+      <div class="card-icon">💸</div>
+      <div class="card-title white">Energy Cost Pressure</div>
+      <div class="card-body white">Industrial electricity rates have increased significantly. Diesel and LPG remain volatile, exposing manufacturers to unpredictable input costs that erode margins.</div>
+    </div>
+    <div class="card-dark">
+      <div class="card-icon">🌍</div>
+      <div class="card-title white">Sustainability Mandates</div>
+      <div class="card-body white">Vision 2030 environmental targets require Saudi industries to reduce carbon footprint. Regulatory bodies are tightening emission standards for industrial operations.</div>
+    </div>
+    <div class="card-dark">
+      <div class="card-icon">⚠️</div>
+      <div class="card-title white">Supply Reliability Risk</div>
+      <div class="card-body white">Cylinder-based LPG creates operational vulnerability — delivery delays, storage limitations, and quantity restrictions disrupt continuous manufacturing processes.</div>
+    </div>
+    <div class="card-dark">
+      <div class="card-icon">📉</div>
+      <div class="card-title white">Competitive Pressure</div>
+      <div class="card-body white">Regional competitors with access to piped natural gas operate at 30–50% lower fuel costs. Without grid access, Saudi manufacturers face a structural cost disadvantage.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: WHY GAS -->
+<section class="slide slide-content">
+  <div class="section-badge">The Solution</div>
+  <div class="section-title">Why Natural Gas for Industry?</div>
+  <div class="section-divider"></div>
+  <div class="cards" style="flex:1">
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <div class="card-title">Superior Calorific Value</div>
+      <div class="card-body">Natural gas delivers 1,080 BTU/SCF — consistent, high-energy content ideal for furnaces, kilns, boilers, and process heating. Zero waste from incomplete combustion.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <div class="card-title">Predictable, Regulated Pricing</div>
+      <div class="card-body">TAQA Arabia operates under a Regulated Asset Base (RAB) model approved by GAZT. Tariffs are stable and reset every 5 years — shielding you from oil price volatility.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔌</div>
+      <div class="card-title">Uninterrupted Pipeline Supply</div>
+      <div class="card-body">Continuous piped supply eliminates cylinder dependency. High-pressure distribution network operates at 99.97% availability — no production stoppages from fuel shortages.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌿</div>
+      <div class="card-title">Cleanest Fossil Fuel</div>
+      <div class="card-body">50% less CO₂ than coal, 30% less than diesel. Supports Vision 2030 sustainability targets and positions your facility for future carbon compliance requirements.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🛡️</div>
+      <div class="card-title">ARAMCO Licensed Network</div>
+      <div class="card-body">TAQA Arabia sources gas directly from Saudi ARAMCO's grid. All distribution infrastructure complies with SAGIA, SASO, and NFPA standards — fully licensed and insured.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔧</div>
+      <div class="card-title">Technical Support</div>
+      <div class="card-body">Dedicated industrial engineers assist with burner retrofit, meter sizing, PRMS station design, and SCADA monitoring integration — from day one through full lifecycle.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: COST COMPARISON -->
+<section class="slide slide-content">
+  <div class="section-badge">Economics</div>
+  <div class="section-title">Cost Comparison: Gas vs. Alternatives</div>
+  <div class="section-divider"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px">Fuel Cost per MMBtu (SAR) — 2025</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">Natural Gas (TAQA)</span><div class="bar-track"><div class="bar-fill gold" style="width:19%">1.08</div></div></div>
+        <div class="bar-row"><span class="bar-label">LPG (Propane)</span><div class="bar-track"><div class="bar-fill navy" style="width:55%">3.20</div></div></div>
+        <div class="bar-row"><span class="bar-label">Diesel (Industrial)</span><div class="bar-track"><div class="bar-fill blue" style="width:75%">4.35</div></div></div>
+        <div class="bar-row"><span class="bar-label">Heavy Fuel Oil</span><div class="bar-track"><div class="bar-fill navy" style="width:68%">3.95</div></div></div>
+        <div class="bar-row"><span class="bar-label">Grid Electricity</span><div class="bar-track"><div class="bar-fill red" style="width:92%">5.30</div></div></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px">Annual Savings — 10,000 MMBtu/year facility</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0;border-radius:10px;padding:16px;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:13px;font-weight:700;color:#15803d">vs. LPG</div><div style="font-size:11px;color:#166534">Switching from LPG cylinders</div></div>
+          <div style="text-align:right"><div style="font-size:24px;font-weight:900;color:#15803d">SAR 212K</div><div style="font-size:11px;color:#166534">per year savings</div></div>
+        </div>
+        <div style="background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0;border-radius:10px;padding:16px;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:13px;font-weight:700;color:#15803d">vs. Diesel</div><div style="font-size:11px;color:#166534">Replacing diesel burners</div></div>
+          <div style="text-align:right"><div style="font-size:24px;font-weight:900;color:#15803d">SAR 327K</div><div style="font-size:11px;color:#166534">per year savings</div></div>
+        </div>
+        <div style="background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0;border-radius:10px;padding:16px;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:13px;font-weight:700;color:#15803d">vs. Electricity</div><div style="font-size:11px;color:#166534">Process heat applications</div></div>
+          <div style="text-align:right"><div style="font-size:24px;font-weight:900;color:#15803d">SAR 422K</div><div style="font-size:11px;color:#166534">per year savings</div></div>
+        </div>
+      </div>
+      <div style="margin-top:12px;background:rgba(255,199,14,.12);border:1px solid rgba(255,199,14,.3);border-radius:8px;padding:12px;font-size:11.5px;color:#92400e">
+        ⭐ Payback on connection investment typically <strong>12–24 months</strong> for medium industrial consumers
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: SECTORS -->
+<section class="slide slide-content">
+  <div class="section-badge">Market Coverage</div>
+  <div class="section-title">Industries We Serve</div>
+  <div class="section-divider"></div>
+  <div class="cards cards-4" style="flex:1">
+    <div class="card" style="border-top:3px solid var(--gold)">
+      <div class="card-icon">🥛</div>
+      <div class="card-title">Food & Beverage</div>
+      <div class="card-body">Ovens, pasteurisers, steam generation, drying lines, CIP systems. High-purity natural gas for food-grade applications.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--gold)">
+      <div class="card-icon">🧱</div>
+      <div class="card-title">Building Materials</div>
+      <div class="card-body">Ceramic kilns, brick firing, glass melting, cement calcination. Consistent temperature profile improves product quality.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--gold)">
+      <div class="card-icon">🔩</div>
+      <div class="card-title">Metals & Fabrication</div>
+      <div class="card-body">Heat treatment furnaces, forge heating, galvanising lines, annealing. Gas provides precise temperature control unavailable with diesel.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--gold)">
+      <div class="card-icon">🧴</div>
+      <div class="card-title">Plastics & Chemicals</div>
+      <div class="card-body">Extrusion heating, reactor thermal systems, solvent drying, feedstock. Consistent BTU content critical for process chemistry.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--blue)">
+      <div class="card-icon">🧵</div>
+      <div class="card-title">Textiles</div>
+      <div class="card-body">Dyeing vats, stenter frames, heat setting. Natural gas enables high-temperature uniformity at lower cost than steam from electric boilers.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--blue)">
+      <div class="card-icon">💊</div>
+      <div class="card-title">Pharmaceuticals</div>
+      <div class="card-body">Clean steam, autoclaves, temperature-controlled storage. GMP-compliant gas supply with full metering documentation.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--blue)">
+      <div class="card-icon">🏗️</div>
+      <div class="card-title">Industrial Zones</div>
+      <div class="card-body">MODON, KIZAD, industrial cities. Backbone gas infrastructure serving entire industrial zones under single concession agreement.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--blue)">
+      <div class="card-icon">🌡️</div>
+      <div class="card-title">District Cooling / Heating</div>
+      <div class="card-body">Absorption chillers and cogeneration systems powered by gas — delivering cooling at 40% lower cost than electric chillers.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: TECHNICAL -->
+<section class="slide slide-content">
+  <div class="section-badge">Technical Specifications</div>
+  <div class="section-title">Infrastructure & Delivery Standards</div>
+  <div class="section-divider"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1">
+    <div>
+      <table class="data-table">
+        <thead><tr><th>Parameter</th><th>Specification</th></tr></thead>
+        <tbody>
+          <tr><td>Gas Quality</td><td><strong>Pipeline Grade — ARAMCO Standard</strong></td></tr>
+          <tr><td>Calorific Value</td><td>1,080 BTU/SCF (gross, dry basis)</td></tr>
+          <tr><td>Delivery Pressure</td><td>2 – 100 bar (site-specific)</td></tr>
+          <tr><td>Min Offtake Volume</td><td>500 MMBtu/year (industrial)</td></tr>
+          <tr><td>Metering Standard</td><td>OIML / SASO certified turbine / ultrasonic</td></tr>
+          <tr><td>PRMS Inspection</td><td>Every 24 months — certified engineers</td></tr>
+          <tr><td>Network Availability</td><td>99.97% (2023–2024 measured)</td></tr>
+          <tr><td>Emergency Response</td><td>&lt;2 hours on-site, 24/7/365</td></tr>
+          <tr class="highlight"><td><strong>SCADA Monitoring</strong></td><td><strong>Real-time, per-station telemetry</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:2px">PRMS Station Capabilities</div>
+      <div class="check-list">
+        <div class="check-item"><div class="check-mark">✓</div>Pressure regulation from transmission to distribution pressure</div>
+        <div class="check-item"><div class="check-mark">✓</div>Over-pressure protection (SIL-rated relief valves)</div>
+        <div class="check-item"><div class="check-mark">✓</div>Odorisation system (THT injection, SASO specification)</div>
+        <div class="check-item"><div class="check-mark">✓</div>Gas chromatography quality monitoring</div>
+        <div class="check-item"><div class="check-mark">✓</div>Ultrasonic flow metering with temperature/pressure correction</div>
+        <div class="check-item"><div class="check-mark">✓</div>Remote isolation for emergency shutoff</div>
+        <div class="check-item"><div class="check-mark">✓</div>SCADA integration — live data to client CMMS</div>
+        <div class="check-item"><div class="check-mark">✓</div>QHSE-certified maintenance programme</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: COMMERCIAL MODEL -->
+<section class="slide slide-dark">
+  <div class="section-badge">Commercial Framework</div>
+  <div class="section-title white">Transparent, Regulated Pricing Model</div>
+  <div class="section-divider"></div>
+  <div class="cards" style="flex:1">
+    <div class="card-dark">
+      <div class="tag">Building Block 1</div>
+      <div class="card-title white">Return on Capital</div>
+      <div class="card-body white">WACC-based return on the Regulated Asset Base (RAB). Capital recovery is distributed over asset life — you benefit from declining tariffs as assets depreciate.</div>
+    </div>
+    <div class="card-dark">
+      <div class="tag">Building Block 2–3</div>
+      <div class="card-title white">Depreciation + Tax</div>
+      <div class="card-body white">Straight-line depreciation (30-year assets) and Zakat obligations are passed through transparently in the tariff — no hidden margins.</div>
+    </div>
+    <div class="card-dark">
+      <div class="tag">Building Block 4–5</div>
+      <div class="card-title white">Operating Costs</div>
+      <div class="card-body white">Controllable OPEX subject to X-factor efficiency mechanism. Pass-through costs (ARAMCO licence, insurance, government fees) recovered at actual cost.</div>
+    </div>
+    <div class="card-dark">
+      <div class="tag">Tariff Mode</div>
+      <div class="card-title white">Fixed + 5-Year Resets</div>
+      <div class="card-body white">Tariff fixed for 5-year price control periods, then reset by independent regulator. CPI escalation applies within each period — maximum 2% per annum.</div>
+    </div>
+    <div class="card-dark">
+      <div class="tag">Gas Commodity</div>
+      <div class="card-title white">Commodity Pass-Through</div>
+      <div class="card-body white">Gas commodity at SAR 10.31/MMBtu (ARAMCO transfer price). Distribution tariff is separate and stable — commodity price risk can be hedged independently.</div>
+    </div>
+    <div class="card-dark">
+      <div class="tag">Connection</div>
+      <div class="card-title white">Connection Agreement</div>
+      <div class="card-body white">One-time connection fee covers meter, PRMS, and internal metering. Annual take-or-pay minimum volume agreement (negotiable). No connection CapEx for large industrials.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: ENVIRONMENTAL -->
+<section class="slide slide-content">
+  <div class="section-badge">Sustainability</div>
+  <div class="section-title">Natural Gas & Vision 2030 Alignment</div>
+  <div class="section-divider"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--navy)">CO₂ Reduction vs. Alternatives (tCO₂ per TJ)</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">Natural Gas</span><div class="bar-track"><div class="bar-fill green" style="width:40%">56.1</div></div></div>
+        <div class="bar-row"><span class="bar-label">Diesel</span><div class="bar-track"><div class="bar-fill red" style="width:73%">74.1</div></div></div>
+        <div class="bar-row"><span class="bar-label">Heavy Fuel Oil</span><div class="bar-track"><div class="bar-fill red" style="width:77%">77.4</div></div></div>
+        <div class="bar-row"><span class="bar-label">Coal</span><div class="bar-track"><div class="bar-fill red" style="width:94%">94.6</div></div></div>
+      </div>
+      <div style="background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0;border-radius:10px;padding:14px;margin-top:4px">
+        <div style="font-size:13px;font-weight:700;color:#15803d;margin-bottom:4px">Switching 10,000 MMBtu/year from diesel:</div>
+        <div style="font-size:24px;font-weight:900;color:#15803d">↓ 180 tonnes CO₂/year</div>
+        <div style="font-size:11px;color:#166534;margin-top:2px">Equivalent to removing 80 cars from the road annually</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="check-list">
+        <div class="check-item"><div class="check-mark blue">✓</div><div><strong>NEOM & Giga-Project Ready</strong> — Gas infrastructure designed to NEOM environmental standards for net-zero transition.</div></div>
+        <div class="check-item"><div class="check-mark blue">✓</div><div><strong>Saudi Green Initiative</strong> — TAQA Arabia's network supports the Kingdom's pledge to plant 10 billion trees and reduce emissions.</div></div>
+        <div class="check-item"><div class="check-mark blue">✓</div><div><strong>Carbon Reporting</strong> — Monthly emission factor statements for your GRI/CDP/Tadawul sustainability reports.</div></div>
+        <div class="check-item"><div class="check-mark blue">✓</div><div><strong>Hydrogen Ready</strong> — TAQA Arabia's pipeline network is engineered for future H₂/NG blending (up to 20% H₂ by volume) as KSA hydrogen economy develops.</div></div>
+        <div class="check-item"><div class="check-mark blue">✓</div><div><strong>Zero Liquid Discharge</strong> — Unlike diesel, piped natural gas eliminates on-site fuel storage spill risk — full environmental compliance.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 9: CONNECTION PROCESS -->
+<section class="slide slide-content">
+  <div class="section-badge">How to Connect</div>
+  <div class="section-title">The Connection Journey — 6 Steps</div>
+  <div class="section-divider"></div>
+  <div style="flex:1;display:flex;gap:24px">
+    <div style="flex:1">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="tl-dot gold">1</div>
+          <div class="tl-content"><div class="tl-title">Site Assessment & Feasibility Study</div><div class="tl-body">TAQA Arabia engineers visit your facility. Load profile analysis, pressure requirements, pipe routing survey. Completed within 5 business days.</div></div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot">2</div>
+          <div class="tl-content"><div class="tl-title">Commercial Proposal & Agreement</div><div class="tl-body">Tailored tariff proposal based on volume profile. Connection agreement review (take-or-pay terms, PRMS ownership, warranty). Typically 2–3 weeks.</div></div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot">3</div>
+          <div class="tl-content"><div class="tl-title">Regulatory Approvals</div><div class="tl-body">TAQA Arabia manages all municipality, GAZT, ARAMCO, and civil defence approvals on your behalf. Typically 4–8 weeks.</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="flex:1">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="tl-dot">4</div>
+          <div class="tl-content"><div class="tl-title">Infrastructure Construction</div><div class="tl-body">TAQA Arabia constructs the connection line from the nearest distribution main to your PRMS station. All civil, mechanical, and instrumentation works included.</div></div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot">5</div>
+          <div class="tl-content"><div class="tl-title">Commissioning & Testing</div><div class="tl-body">Pressure testing, purging, odorant verification, SCADA link commissioning. Operational sign-off with client's engineering team. Full handover documentation.</div></div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot gold">6</div>
+          <div class="tl-content"><div class="tl-title">Live Supply & Account Management</div><div class="tl-body">Dedicated industrial account manager. Monthly billing with consumption data. 24/7 emergency line. Annual PRMS service included in tariff.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 10: TRACK RECORD -->
+<section class="slide slide-metrics">
+  <div class="section-badge">Track Record</div>
+  <div class="section-title white">TAQA Arabia by the Numbers</div>
+  <div class="section-divider"></div>
+  <div class="cards cards-4" style="flex:0 0 auto;margin-bottom:20px">
+    <div class="card-dark" style="text-align:center">
+      <div class="highlight-num">SAR 230M</div>
+      <div class="hl-label">Total CapEx Invested</div>
+    </div>
+    <div class="card-dark" style="text-align:center">
+      <div class="highlight-num">5</div>
+      <div class="hl-label">PRMS Stations Operational</div>
+    </div>
+    <div class="card-dark" style="text-align:center">
+      <div class="highlight-num">569</div>
+      <div class="hl-label">Active Connections</div>
+    </div>
+    <div class="card-dark" style="text-align:center">
+      <div class="highlight-num">99.97%</div>
+      <div class="hl-label">Network Uptime (2024)</div>
+    </div>
+  </div>
+  <div class="cards cards-2" style="flex:1">
+    <div class="card-dark">
+      <div class="card-icon">🏆</div>
+      <div class="card-title white">ARAMCO Licensed Distributor</div>
+      <div class="card-body white">One of only a select few companies holding a full Saudi ARAMCO gas distribution licence for third-party industrial customers in KSA — providing unmatched supply security.</div>
+    </div>
+    <div class="card-dark">
+      <div class="card-icon">🔬</div>
+      <div class="card-title white">ISO 9001:2015 Certified Operations</div>
+      <div class="card-body white">Full quality management system certification across all operations — from engineering design to customer billing. OHSAS 18001 safety management in active implementation.</div>
+    </div>
+    <div class="card-dark">
+      <div class="card-icon">📍</div>
+      <div class="card-title white">Current Concession Coverage</div>
+      <div class="card-body white">Operating in [primary service area] with expansion rights to adjacent industrial zones. Serving customers from SMEs to Fortune 500 manufacturers with daily volumes from 50 to 5,000+ MMBtu.</div>
+    </div>
+    <div class="card-dark">
+      <div class="card-icon">📅</div>
+      <div class="card-title white">30-Year Regulatory Certainty</div>
+      <div class="card-body white">TAQA Arabia holds a 30-year government concession (2028–2056). Regulatory framework provides long-term investment certainty for customers planning capex on gas-fired equipment.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 11: CONTACT -->
+<section class="slide slide-dark">
+  <div class="section-badge">Next Steps</div>
+  <div class="section-title white">Start Your Gas Journey Today</div>
+  <div class="section-divider"></div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:20px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+      <div style="background:rgba(255,199,14,.12);border:1px solid rgba(255,199,14,.3);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">📞</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Call Us</div>
+        <div style="font-size:16px;font-weight:700;color:#fff">+966 11 XXX XXXX</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Industrial Sales Team<br/>Sun–Thu 8:00–17:00</div>
+      </div>
+      <div style="background:rgba(255,199,14,.12);border:1px solid rgba(255,199,14,.3);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">✉️</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Email Us</div>
+        <div style="font-size:16px;font-weight:700;color:#fff">industrial@taqa-arabia.com</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Response within 24 hours<br/>RFI & technical inquiries</div>
+      </div>
+      <div style="background:rgba(255,199,14,.12);border:1px solid rgba(255,199,14,.3);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">📍</div>
+        <div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Visit Us</div>
+        <div style="font-size:16px;font-weight:700;color:#fff">TAQA Arabia HQ</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">Riyadh, Kingdom of Saudi Arabia<br/>By appointment</div>
+      </div>
+    </div>
+    <div style="background:var(--gold);border-radius:14px;padding:24px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:16px;font-weight:800;color:var(--navy)">Request a Free Site Assessment</div>
+        <div style="font-size:12px;color:rgba(0,32,96,.65);margin-top:4px">Our industrial engineers will visit your facility within 5 days and prepare a customised gas feasibility report at no cost.</div>
+      </div>
+      <div style="background:var(--navy);color:#fff;padding:12px 28px;border-radius:8px;font-weight:700;font-size:14px;flex-shrink:0">Book Now →</div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let cur = 0;
+const pbar = document.getElementById('pbar');
+const snum = document.getElementById('snum');
+
+function go(n) {
+  slides[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(total - 1, n));
+  slides[cur].classList.add('active');
+  pbar.style.width = ((cur + 1) / total * 100) + '%';
+  snum.textContent = (cur + 1) + ' / ' + total;
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === total - 1;
+}
+document.getElementById('prev').addEventListener('click', () => go(cur - 1));
+document.getElementById('next').addEventListener('click', () => go(cur + 1));
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(cur + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(cur - 1);
+});
+go(0);
+</script>
+</body>
+</html>
